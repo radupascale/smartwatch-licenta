@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "mini_iot-eagle-import")(type "KiCad")(uri "${KIPRJMOD}/mini_iot-eagle-import.kicad_sym")(options "")(descr ""))
+)

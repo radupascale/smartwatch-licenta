@@ -1,0 +1,90 @@
+(footprint "ESP32_WROVER_EAGLE-LTSPICE_R0402" (version 20221018) (generator pcbnew)
+  (layer "F.Cu")
+  (descr "<b>RESISTOR</b>")
+  (fp_text reference "REF**" (at -0.635 -0.635) (layer "F.SilkS")
+      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
+    (tstamp 5e17c4d8-f346-4755-8e9f-19ba8ff15709)
+  )
+  (fp_text value "ESP32_WROVER_EAGLE-LTSPICE_R0402" (at -0.635 1.905) (layer "F.Fab")
+      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
+    (tstamp 1692f40a-a621-4719-9d3e-a0431f471e95)
+  )
+  (fp_text user "${REFERENCE}" (at -0.635 -0.635) (layer "F.SilkS")
+      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
+    (tstamp a6800920-19af-4f7d-9b8c-2f430756c7d3)
+  )
+  (fp_text user "${VALUE}" (at -0.635 1.905) (layer "F.Fab")
+      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
+    (tstamp 614885a0-e7c3-40ad-8cad-f852d47be0f4)
+  )
+  (fp_poly
+    (pts
+      (xy -0.1999 0.4001)
+      (xy 0.1999 0.4001)
+      (xy 0.1999 -0.4001)
+      (xy -0.1999 -0.4001)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Adhes") (tstamp 63d9baee-1969-4735-8abe-400f0a6cb787))
+  (fp_poly
+    (pts
+      (xy -0.1999 0.4001)
+      (xy 0.1999 0.4001)
+      (xy 0.1999 -0.4001)
+      (xy -0.1999 -0.4001)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Adhes") (tstamp 7bbd16db-72c3-4d18-a4c3-669530cf8993))
+  (fp_line (start -1.473 -0.483) (end 1.473 -0.483)
+    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp 9b102777-6b17-446f-84c5-a97f59b3567f))
+  (fp_line (start -1.473 0.483) (end -1.473 -0.483)
+    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp 4ede63db-d1c9-40d7-929a-c1acf1268170))
+  (fp_line (start 1.473 -0.483) (end 1.473 0.483)
+    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp 154acc2b-335f-4561-9953-2b7b62bb5443))
+  (fp_line (start 1.473 0.483) (end -1.473 0.483)
+    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp e9074d26-23a6-44f9-92e1-04a66124fad3))
+  (fp_line (start -0.245 -0.224) (end 0.245 -0.224)
+    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp df4e64c7-9d6b-4f1d-8ad9-b0a1b668dda2))
+  (fp_line (start 0.245 0.224) (end -0.245 0.224)
+    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp 21eeda81-ab5b-4c69-84c5-3bbd66ca0189))
+  (fp_poly
+    (pts
+      (xy -0.554 0.3048)
+      (xy -0.254 0.3048)
+      (xy -0.254 -0.2951)
+      (xy -0.554 -0.2951)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp b8774522-c460-4946-b275-f69249d9ab7b))
+  (fp_poly
+    (pts
+      (xy -0.554 0.3048)
+      (xy -0.254 0.3048)
+      (xy -0.254 -0.2951)
+      (xy -0.554 -0.2951)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp e51fc501-0afe-4d13-8e55-7f22f04b2e65))
+  (fp_poly
+    (pts
+      (xy 0.2588 0.3048)
+      (xy 0.5588 0.3048)
+      (xy 0.5588 -0.2951)
+      (xy 0.2588 -0.2951)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 902fe971-b334-40a9-a878-d46d87ac3187))
+  (fp_poly
+    (pts
+      (xy 0.2588 0.3048)
+      (xy 0.5588 0.3048)
+      (xy 0.5588 -0.2951)
+      (xy 0.2588 -0.2951)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 94d9c068-6cee-4141-b985-b4677bb635a6))
+  (pad "1" smd rect (at -0.65 0) (size 0.7 0.9) (layers "F.Cu" "F.Paste" "F.Mask")
+    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp 53fa9ca8-0e1f-4544-9556-0d688c9694d5))
+  (pad "2" smd rect (at 0.65 0) (size 0.7 0.9) (layers "F.Cu" "F.Paste" "F.Mask")
+    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp dc32d097-5e1c-4a76-9a3c-0c92eb9a2821))
+)

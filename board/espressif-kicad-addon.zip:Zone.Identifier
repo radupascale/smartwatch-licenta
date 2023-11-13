@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://github.com/espressif/kicad-libraries/releases/tag/2.0.4
+HostUrl=https://objects.githubusercontent.com/github-production-release-asset-2e65be/374609473/2e2db53a-74a7-4582-b05d-1d23511feab9?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20231112%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231112T170556Z&X-Amz-Expires=300&X-Amz-Signature=959dac4d77df9025f1a044bd552c760062ce241ad547d4501922c6a5b5b5a012&X-Amz-SignedHeaders=host&actor_id=74196787&key_id=0&repo_id=374609473&response-content-disposition=attachment%3B%20filename%3Despressif-kicad-addon.zip&response-content-type=application%2Foctet-stream
