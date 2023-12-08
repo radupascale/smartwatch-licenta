@@ -55,7 +55,13 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "hole_clearance|124100000|95197000|a2e41cb9-6e37-436c-a543-bd0ff6a2e343|e1f802d6-85fc-4a1d-a707-b423abc0a1d1",
+        "hole_clearance|124300000|95197000|a2e41cb9-6e37-436c-a543-bd0ff6a2e343|8d593528-18a9-4135-9cfa-40110ee5e361",
+        "hole_clearance|129700000|95197000|148d6ab6-f184-4485-aaa7-37a55cf59fdd|6f9f9c84-6f7f-42b0-847a-78f5f8e1699c",
+        "hole_clearance|129900000|95197000|148d6ab6-f184-4485-aaa7-37a55cf59fdd|6a8dc747-c6e5-427a-8e85-a0eafc960460",
+        "items_not_allowed|137230000|75329400|c08cdcc7-a191-4048-9d92-63293a630af7|00000000-0000-0000-0000-000000000000"
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -114,7 +120,7 @@
         "max_error": 0.005,
         "min_clearance": 0.0,
         "min_connection": 0.0,
-        "min_copper_edge_clearance": 0.5,
+        "min_copper_edge_clearance": 0.25,
         "min_hole_clearance": 0.25,
         "min_hole_to_hole": 0.25,
         "min_microvia_diameter": 0.19999999999999998,
