@@ -98,5 +98,5 @@
 	(condition "A.isPlated() && B.Type == 'track'"))
 
 (rule "Pad to Track clearance)"
-	(constraint clearance (min 0.2mm))
+	(constraint clearance (min 0.3mm))
 	(condition "A.isPlated() && B.Type == 'track'"))
