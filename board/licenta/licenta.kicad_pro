@@ -57,9 +57,13 @@
       ],
       "drc_exclusions": [
         "hole_clearance|124100000|95197000|a2e41cb9-6e37-436c-a543-bd0ff6a2e343|e1f802d6-85fc-4a1d-a707-b423abc0a1d1",
+        "hole_clearance|124100000|95197000|e1f802d6-85fc-4a1d-a707-b423abc0a1d1|a2e41cb9-6e37-436c-a543-bd0ff6a2e343",
+        "hole_clearance|124300000|95197000|8d593528-18a9-4135-9cfa-40110ee5e361|a2e41cb9-6e37-436c-a543-bd0ff6a2e343",
         "hole_clearance|124300000|95197000|a2e41cb9-6e37-436c-a543-bd0ff6a2e343|8d593528-18a9-4135-9cfa-40110ee5e361",
         "hole_clearance|129700000|95197000|148d6ab6-f184-4485-aaa7-37a55cf59fdd|6f9f9c84-6f7f-42b0-847a-78f5f8e1699c",
+        "hole_clearance|129700000|95197000|6f9f9c84-6f7f-42b0-847a-78f5f8e1699c|148d6ab6-f184-4485-aaa7-37a55cf59fdd",
         "hole_clearance|129900000|95197000|148d6ab6-f184-4485-aaa7-37a55cf59fdd|6a8dc747-c6e5-427a-8e85-a0eafc960460",
+        "hole_clearance|129900000|95197000|6a8dc747-c6e5-427a-8e85-a0eafc960460|148d6ab6-f184-4485-aaa7-37a55cf59fdd",
         "items_not_allowed|137230000|75329400|c08cdcc7-a191-4048-9d92-63293a630af7|00000000-0000-0000-0000-000000000000"
       ],
       "meta": {
@@ -125,7 +129,7 @@
         "min_hole_to_hole": 0.25,
         "min_microvia_diameter": 0.19999999999999998,
         "min_microvia_drill": 0.09999999999999999,
-        "min_resolved_spokes": 2,
+        "min_resolved_spokes": 1,
         "min_silk_clearance": 0.0,
         "min_text_height": 0.7999999999999999,
         "min_text_thickness": 0.08,
@@ -207,12 +211,7 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [
-      "power_pin_not_driven|1219200|1549400|60125873-c269-4829-b1d7-9a7128ff4b2a|00000000-0000-0000-0000-000000000000|||",
-      "power_pin_not_driven|1219200|1752600|98c77e90-84d2-4a27-a9ce-456e95146c0e|00000000-0000-0000-0000-000000000000|||",
-      "power_pin_not_driven|3022600|1041400|59181694-4791-4acd-8d39-d3f95f63d95a|00000000-0000-0000-0000-000000000000|||",
-      "power_pin_not_driven|3225800|1041400|ba7a12a0-e279-4fca-b818-8ecdc661528f|00000000-0000-0000-0000-000000000000|||"
-    ],
+    "erc_exclusions": [],
     "meta": {
       "version": 0
     },
