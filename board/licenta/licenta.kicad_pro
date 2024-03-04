@@ -211,7 +211,12 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [],
+    "erc_exclusions": [
+      "power_pin_not_driven|1219200|1549400|60125873-c269-4829-b1d7-9a7128ff4b2a|00000000-0000-0000-0000-000000000000|||",
+      "power_pin_not_driven|1219200|1752600|98c77e90-84d2-4a27-a9ce-456e95146c0e|00000000-0000-0000-0000-000000000000|||",
+      "power_pin_not_driven|3022600|1041400|59181694-4791-4acd-8d39-d3f95f63d95a|00000000-0000-0000-0000-000000000000|||",
+      "power_pin_not_driven|3225800|1041400|ba7a12a0-e279-4fca-b818-8ecdc661528f|00000000-0000-0000-0000-000000000000|||"
+    ],
     "meta": {
       "version": 0
     },
@@ -703,7 +708,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "licenta.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
