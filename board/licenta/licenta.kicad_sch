@@ -6064,12 +6064,6 @@
 		(uuid "5395bedf-3b4e-46f9-994c-852dd6c5c51c")
 	)
 	(junction
-		(at 144.78 33.02)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "55775d03-6e81-43d6-8115-671192879179")
-	)
-	(junction
 		(at 368.3 58.42)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6080,6 +6074,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5e86a73e-e362-4eb7-b08a-f3c14ba2a295")
+	)
+	(junction
+		(at 147.32 33.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5f1383b8-851d-497b-8999-35a7bae6d71f")
 	)
 	(junction
 		(at 292.1 104.14)
@@ -6360,10 +6360,6 @@
 		(uuid "889f9e2a-20b3-4b7a-af6f-e8e14ef18d10")
 	)
 	(no_connect
-		(at 279.4 226.06)
-		(uuid "8c1b7b1a-0860-4746-b7c8-54d12ad32e42")
-	)
-	(no_connect
 		(at 281.94 228.6)
 		(uuid "99fde735-b191-4658-8ea7-d4346960767d")
 	)
@@ -6402,6 +6398,10 @@
 	(no_connect
 		(at 147.32 124.46)
 		(uuid "bedc9a81-95e6-424e-babb-7978c1643a41")
+	)
+	(no_connect
+		(at 281.94 236.22)
+		(uuid "d37b9c9f-6338-4e74-9a85-781460f5201e")
 	)
 	(no_connect
 		(at 106.68 58.42)
@@ -6553,6 +6553,16 @@
 	)
 	(wire
 		(pts
+			(xy 147.32 33.02) (xy 154.94 33.02)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "0d7b147c-7938-4bca-930a-de75c0104b8e")
+	)
+	(wire
+		(pts
 			(xy 307.34 261.62) (xy 309.88 261.62)
 		)
 		(stroke
@@ -6603,6 +6613,16 @@
 	)
 	(wire
 		(pts
+			(xy 295.91 207.01) (xy 295.91 212.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "140f4876-74e6-4018-ae17-ec63e2f9d68f")
+	)
+	(wire
+		(pts
 			(xy 340.36 106.68) (xy 340.36 104.14)
 		)
 		(stroke
@@ -6620,6 +6640,16 @@
 			(type solid)
 		)
 		(uuid "17155b7a-5836-44db-bbc5-2dc874f95867")
+	)
+	(wire
+		(pts
+			(xy 309.88 193.04) (xy 309.88 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "18430631-c5a0-4bb9-879b-8489f05bbd52")
 	)
 	(wire
 		(pts
@@ -7133,16 +7163,6 @@
 	)
 	(wire
 		(pts
-			(xy 144.78 33.02) (xy 139.7 33.02)
-		)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(uuid "42ec786f-a1c6-4f01-82c3-2e04d2e6e1b9")
-	)
-	(wire
-		(pts
 			(xy 223.52 144.78) (xy 223.52 147.32)
 		)
 		(stroke
@@ -7330,6 +7350,16 @@
 			(type default)
 		)
 		(uuid "5c9a792f-f059-4dc8-90fd-da00d36083fb")
+	)
+	(wire
+		(pts
+			(xy 295.91 193.04) (xy 295.91 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e7f648b-efb8-4d42-941a-913daf706908")
 	)
 	(wire
 		(pts
@@ -7563,6 +7593,16 @@
 	)
 	(wire
 		(pts
+			(xy 295.91 212.09) (xy 300.99 212.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "70846eb1-f8c7-491d-ae49-c8fa6f1557c9")
+	)
+	(wire
+		(pts
 			(xy 38.1 233.68) (xy 33.02 233.68)
 		)
 		(stroke
@@ -7763,7 +7803,7 @@
 	)
 	(wire
 		(pts
-			(xy 154.94 33.02) (xy 144.78 33.02)
+			(xy 139.7 33.02) (xy 147.32 33.02)
 		)
 		(stroke
 			(width 0.1524)
@@ -7910,6 +7950,16 @@
 			(type solid)
 		)
 		(uuid "9220dbfe-909c-485d-abe5-f8a0e4d0adc3")
+	)
+	(wire
+		(pts
+			(xy 147.32 26.67) (xy 147.32 33.02)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "93c4caf5-a14e-4e08-8426-6094033a4639")
 	)
 	(wire
 		(pts
@@ -8103,6 +8153,16 @@
 	)
 	(wire
 		(pts
+			(xy 309.88 212.09) (xy 314.96 212.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a4d49a77-01f3-4dd2-8989-26aedce026ae")
+	)
+	(wire
+		(pts
 			(xy 109.22 73.66) (xy 109.22 76.2)
 		)
 		(stroke
@@ -8130,6 +8190,16 @@
 			(type solid)
 		)
 		(uuid "a618f8be-f3bd-4faf-8d21-166340de5dca")
+	)
+	(wire
+		(pts
+			(xy 309.88 207.01) (xy 309.88 212.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a70607ea-9cc1-4b03-9e8a-0e354c3efbcd")
 	)
 	(wire
 		(pts
@@ -8983,16 +9053,6 @@
 	)
 	(wire
 		(pts
-			(xy 144.78 33.02) (xy 147.32 30.48)
-		)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(uuid "f4823649-1dcc-46b6-9bd1-cb0ce033f45e")
-	)
-	(wire
-		(pts
 			(xy 60.96 45.72) (xy 63.5 45.72)
 		)
 		(stroke
@@ -9050,6 +9110,16 @@
 			(type solid)
 		)
 		(uuid "f8d93e80-b245-4ee6-8edc-127778e653f9")
+	)
+	(wire
+		(pts
+			(xy 279.4 226.06) (xy 281.94 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f9ec1e15-aaf0-4d89-b701-da133a98c6fd")
 	)
 	(wire
 		(pts
@@ -9366,6 +9436,17 @@
 		)
 		(uuid "20c5aa6a-246c-4d6d-b2ce-df88f3f104a1")
 	)
+	(label "3V3"
+		(at 309.88 193.04 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.7112 0.7112)
+			)
+			(justify left bottom)
+		)
+		(uuid "21cc3f3a-f122-43e4-bd9c-750cf0bd4ed6")
+	)
 	(label "SS_TFT"
 		(at 298.45 171.45 180)
 		(fields_autoplaced yes)
@@ -9443,7 +9524,7 @@
 		)
 		(uuid "30bd830c-4d22-4115-b686-e1748baf92cd")
 	)
-	(label "BUTTON_3"
+	(label "BUTTON_2"
 		(at 241.3 157.48 180)
 		(fields_autoplaced yes)
 		(effects
@@ -9829,7 +9910,7 @@
 		(uuid "7f9f2929-1b9f-48eb-89e3-18d4d188e7f2")
 	)
 	(label "VBUS"
-		(at 147.32 30.48 90)
+		(at 147.32 26.67 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9839,7 +9920,7 @@
 		)
 		(uuid "802d9d2d-d442-441e-8eef-2bb0cd661290")
 	)
-	(label "BUTTON_3"
+	(label "BUTTON_2"
 		(at 187.96 269.24 180)
 		(fields_autoplaced yes)
 		(effects
@@ -9860,6 +9941,17 @@
 			(justify right bottom)
 		)
 		(uuid "817f9dd1-fd44-4be0-aad9-76a39492aaf6")
+	)
+	(label "3V3"
+		(at 295.91 193.04 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.7112 0.7112)
+			)
+			(justify left bottom)
+		)
+		(uuid "87d5c9a2-039e-41f2-b7e3-07a27c9dd26f")
 	)
 	(label "SCL"
 		(at 137.16 213.36 270)
@@ -9915,6 +10007,17 @@
 			(justify right bottom)
 		)
 		(uuid "92d35bf0-4979-4212-9c03-3412369d80d7")
+	)
+	(label "BOOT"
+		(at 215.9 157.48 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "9615c191-7e84-44f2-bc3c-c001f33ca6fa")
 	)
 	(label "PIN_LED"
 		(at 279.4 281.94 0)
@@ -9993,8 +10096,8 @@
 		)
 		(uuid "af73387d-929b-4f7f-b662-a5d9eff13525")
 	)
-	(label "BUTTON_2"
-		(at 281.94 236.22 0)
+	(label "SCL"
+		(at 300.99 212.09 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10002,7 +10105,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "b4260c63-209b-4bcd-ba48-98d1ab5ffcae")
+		(uuid "b0c1a9de-8621-4087-9476-a4a6cfcff09c")
 	)
 	(label "3V3"
 		(at 336.55 163.83 0)
@@ -10060,16 +10163,16 @@
 		)
 		(uuid "b9e94c4b-e1c8-42c0-af55-01ebcd7b7d11")
 	)
-	(label "BUTTON_2"
-		(at 215.9 157.48 180)
+	(label "BOOT"
+		(at 281.94 226.06 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
-		(uuid "be9c8eef-1131-4cf0-b322-0dd14dd09f6f")
+		(uuid "c22a9927-d23b-4333-9132-bd77bfef141b")
 	)
 	(label "MOSI"
 		(at 104.14 127 180)
@@ -10081,6 +10184,17 @@
 			(justify right bottom)
 		)
 		(uuid "c77cf65f-1d46-4996-92ce-aa5ee7df4f5b")
+	)
+	(label "SDA"
+		(at 314.96 212.09 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c78130df-eed5-4700-adb8-1099c24d9d46")
 	)
 	(label "BUTTON_1"
 		(at 193.04 157.48 180)
@@ -10361,6 +10475,75 @@
 		)
 	)
 	(symbol
+		(lib_id "mini_iot-eagle-import:ESP32_WROVER_EAGLE-LTSPICE_RR0402")
+		(at 295.91 201.93 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "04255bef-75f9-4cdc-beff-0795dfd1bda4")
+		(property "Reference" "R_SCL1"
+			(at 294.4114 205.74 0)
+			(effects
+				(font
+					(size 1.778 1.5113)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Value" "4k7"
+			(at 299.212 205.74 0)
+			(effects
+				(font
+					(size 1.778 1.5113)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Footprint" "mini_iot:ESP32_WROVER_EAGLE-LTSPICE_R0402"
+			(at 295.91 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 295.91 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 295.91 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d8b79357-dbae-44d9-a8fb-50eb56a4e049")
+		)
+		(pin "2"
+			(uuid "d8d8198c-9873-4dd1-9405-7876b4962045")
+		)
+		(instances
+			(project "licenta"
+				(path "/cd4c7fd1-8f21-4516-b6aa-ac99dec1dc72"
+					(reference "R_SCL1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "mini_iot-eagle-import:ESP32_WROVER_EAGLE-LTSPICE_CC0402")
 		(at 228.6 175.26 180)
 		(unit 1)
@@ -10378,7 +10561,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "100nF"
 			(at 231.14 167.64 0)
 			(effects
 				(font
@@ -11457,7 +11640,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "100nF"
 			(at 208.28 167.64 0)
 			(effects
 				(font
@@ -12523,7 +12706,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "100nF"
 			(at 320.04 248.92 0)
 			(effects
 				(font
@@ -14993,7 +15176,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "100nF"
 			(at 256.54 167.64 0)
 			(effects
 				(font
@@ -15720,6 +15903,75 @@
 			(project "licenta"
 				(path "/cd4c7fd1-8f21-4516-b6aa-ac99dec1dc72"
 					(reference "#PWR08")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "mini_iot-eagle-import:ESP32_WROVER_EAGLE-LTSPICE_RR0402")
+		(at 309.88 201.93 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c4de1f49-ef79-4faf-959e-83bde8fafc86")
+		(property "Reference" "R_SDA1"
+			(at 308.3814 205.74 0)
+			(effects
+				(font
+					(size 1.778 1.5113)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Value" "4k7"
+			(at 313.182 205.74 0)
+			(effects
+				(font
+					(size 1.778 1.5113)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Footprint" "mini_iot:ESP32_WROVER_EAGLE-LTSPICE_R0402"
+			(at 309.88 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 309.88 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 309.88 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dc21b70c-0787-4b6f-9180-ad5c1eb86331")
+		)
+		(pin "2"
+			(uuid "47a27235-618d-440f-ac6d-0f544318d708")
+		)
+		(instances
+			(project "licenta"
+				(path "/cd4c7fd1-8f21-4516-b6aa-ac99dec1dc72"
+					(reference "R_SDA1")
 					(unit 1)
 				)
 			)
