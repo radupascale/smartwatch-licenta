@@ -1,55 +1,190 @@
-(footprint "ESP32_WROVER_EAGLE-LTSPICE_C0402" (version 20221018) (generator pcbnew)
-  (layer "F.Cu")
-  (descr "<b>CAPACITOR</b>")
-  (fp_text reference "REF**" (at -0.635 -0.635) (layer "F.SilkS")
-      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
-    (tstamp 49c214bd-75be-456a-8397-aaefaae498f3)
-  )
-  (fp_text value "ESP32_WROVER_EAGLE-LTSPICE_C0402" (at -0.635 1.905) (layer "F.Fab")
-      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
-    (tstamp 4fa169b1-825f-476a-af6b-8f421d49696d)
-  )
-  (fp_poly
-    (pts
-      (xy -0.1999 0.3)
-      (xy 0.1999 0.3)
-      (xy 0.1999 -0.3)
-      (xy -0.1999 -0.3)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Adhes") (tstamp fa7a830d-4615-4d8f-b7c7-6d5cea9e16f1))
-  (fp_line (start -1.473 -0.483) (end 1.473 -0.483)
-    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp 18101b2f-b68a-4694-b555-70094e58939d))
-  (fp_line (start -1.473 0.483) (end -1.473 -0.483)
-    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp 87987224-1529-4362-91c6-8240de5f5b78))
-  (fp_line (start 1.473 -0.483) (end 1.473 0.483)
-    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp a67f2cd2-0c1b-415d-9071-69c1db584a2e))
-  (fp_line (start 1.473 0.483) (end -1.473 0.483)
-    (stroke (width 0.0508) (type solid)) (layer "F.CrtYd") (tstamp f838e97e-6465-4f54-9314-9934802371cb))
-  (fp_line (start -0.245 -0.224) (end 0.245 -0.224)
-    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp bf576051-0f85-487f-95fa-06c08c873760))
-  (fp_line (start 0.245 0.224) (end -0.245 0.224)
-    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp 9534c808-c50d-4a3c-9d1b-1f29813dd919))
-  (fp_poly
-    (pts
-      (xy -0.554 0.3048)
-      (xy -0.254 0.3048)
-      (xy -0.254 -0.2951)
-      (xy -0.554 -0.2951)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 316e3888-8a06-4256-b14d-00ed0cac0c00))
-  (fp_poly
-    (pts
-      (xy 0.2588 0.3048)
-      (xy 0.5588 0.3048)
-      (xy 0.5588 -0.2951)
-      (xy 0.2588 -0.2951)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp ba867a94-b7e4-4959-a774-fda4282212c0))
-  (pad "1" smd rect (at -0.65 0) (size 0.7 0.9) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp b05574f0-37ac-4037-a306-4a54a7f89ea2))
-  (pad "2" smd rect (at 0.65 0) (size 0.7 0.9) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp 8d57e170-2c8d-47af-9795-7a51a5520979))
+(footprint "ESP32_WROVER_EAGLE-LTSPICE_C0402"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "<b>CAPACITOR</b>")
+	(property "Reference" "REF**"
+		(at -0.635 -0.635 0)
+		(layer "F.SilkS")
+		(uuid "49c214bd-75be-456a-8397-aaefaae498f3")
+		(effects
+			(font
+				(size 1.1684 1.1684)
+				(thickness 0.1016)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "ESP32_WROVER_EAGLE-LTSPICE_C0402"
+		(at -0.635 1.905 0)
+		(layer "F.Fab")
+		(uuid "4fa169b1-825f-476a-af6b-8f421d49696d")
+		(effects
+			(font
+				(size 1.1684 1.1684)
+				(thickness 0.1016)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "766a4f31-b161-4195-8e15-27c2131d206f")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8692b77f-3701-41ac-9124-c18e4185d981")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e3fc4a0f-cfad-4c93-8c6a-9b4fffe0b356")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(fp_poly
+		(pts
+			(xy -0.1999 0.3) (xy 0.1999 0.3) (xy 0.1999 -0.3) (xy -0.1999 -0.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Adhes")
+		(uuid "fa7a830d-4615-4d8f-b7c7-6d5cea9e16f1")
+	)
+	(fp_line
+		(start -1.473 -0.483)
+		(end 1.473 -0.483)
+		(stroke
+			(width 0.0508)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "18101b2f-b68a-4694-b555-70094e58939d")
+	)
+	(fp_line
+		(start -1.473 0.483)
+		(end -1.473 -0.483)
+		(stroke
+			(width 0.0508)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "87987224-1529-4362-91c6-8240de5f5b78")
+	)
+	(fp_line
+		(start 1.473 -0.483)
+		(end 1.473 0.483)
+		(stroke
+			(width 0.0508)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "a67f2cd2-0c1b-415d-9071-69c1db584a2e")
+	)
+	(fp_line
+		(start 1.473 0.483)
+		(end -1.473 0.483)
+		(stroke
+			(width 0.0508)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "f838e97e-6465-4f54-9314-9934802371cb")
+	)
+	(fp_line
+		(start -0.245 -0.224)
+		(end 0.245 -0.224)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "bf576051-0f85-487f-95fa-06c08c873760")
+	)
+	(fp_line
+		(start 0.245 0.224)
+		(end -0.245 0.224)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9534c808-c50d-4a3c-9d1b-1f29813dd919")
+	)
+	(fp_poly
+		(pts
+			(xy -0.554 0.3048) (xy -0.254 0.3048) (xy -0.254 -0.2951) (xy -0.554 -0.2951)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "316e3888-8a06-4256-b14d-00ed0cac0c00")
+	)
+	(fp_poly
+		(pts
+			(xy 0.2588 0.3048) (xy 0.5588 0.3048) (xy 0.5588 -0.2951) (xy 0.2588 -0.2951)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "ba867a94-b7e4-4959-a774-fda4282212c0")
+	)
+	(pad "1" smd rect
+		(at -0.65 0)
+		(size 0.7 0.9)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "b05574f0-37ac-4037-a306-4a54a7f89ea2")
+	)
+	(pad "2" smd rect
+		(at 0.65 0)
+		(size 0.7 0.9)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "8d57e170-2c8d-47af-9795-7a51a5520979")
+	)
+	(model "${KICAD8_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
 )

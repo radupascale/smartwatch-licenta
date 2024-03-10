@@ -1,83 +1,259 @@
-(footprint "ESP32_WROVER_SPARKFUN-IC-POWER_SOT23-5" (version 20221018) (generator pcbnew)
-  (layer "F.Cu")
-  (descr "<b>Small Outline Transistor</b>")
-  (fp_text reference "REF**" (at -1.778 -2.159) (layer "F.SilkS")
-      (effects (font (size 0.48768 0.48768) (thickness 0.12192)) (justify left bottom))
-    (tstamp 5773020d-56c9-4343-85ee-8ad2c2755720)
-  )
-  (fp_text value "ESP32_WROVER_SPARKFUN-IC-POWER_SOT23-5" (at -1.778 2.794) (layer "F.Fab")
-      (effects (font (size 0.48768 0.48768) (thickness 0.12192)) (justify left bottom))
-    (tstamp ec886d9d-e2c2-476e-b6b3-6eb48f567745)
-  )
-  (fp_line (start -1.27 0.4294) (end -1.27 -0.4294)
-    (stroke (width 0.2032) (type solid)) (layer "F.SilkS") (tstamp 0b8b01f6-f2d6-4e8a-8a59-251e408b83de))
-  (fp_line (start -0.2684 -0.7088) (end 0.2684 -0.7088)
-    (stroke (width 0.2032) (type solid)) (layer "F.SilkS") (tstamp 382be029-dba7-4829-b90a-e5a1ce3265c5))
-  (fp_line (start 1.27 -0.4294) (end 1.27 0.4294)
-    (stroke (width 0.2032) (type solid)) (layer "F.SilkS") (tstamp 24ec3c58-f0d0-47c6-a6a9-ba85a0d26622))
-  (fp_circle (center -1.6002 1.016) (end -1.5367 1.016)
-    (stroke (width 0.127) (type solid)) (fill solid) (layer "F.SilkS") (tstamp 7e265e35-4462-4c4e-9c00-35f8af466504))
-  (fp_line (start -1.4 -0.8) (end -1.4 0.8)
-    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp 98680083-eb12-4f35-a854-0561485415e2))
-  (fp_line (start -1.4 -0.8) (end 1.4 -0.8)
-    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp 728c8a80-c262-4665-933b-afbfaf9ff648))
-  (fp_line (start 1.4 -0.8) (end 1.4 0.8)
-    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp 57e99434-44ea-4b6e-af03-db2840d8459a))
-  (fp_line (start 1.4 0.8) (end -1.4 0.8)
-    (stroke (width 0.1524) (type solid)) (layer "F.Fab") (tstamp 740e5215-5051-4b6c-ac50-d7cdfbf78ade))
-  (fp_poly
-    (pts
-      (xy -1.2 -0.85)
-      (xy -0.7 -0.85)
-      (xy -0.7 -1.5)
-      (xy -1.2 -1.5)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 9a777b48-ee00-4a81-a587-f166650130a9))
-  (fp_poly
-    (pts
-      (xy -1.2 1.5)
-      (xy -0.7 1.5)
-      (xy -0.7 0.85)
-      (xy -1.2 0.85)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 18cd5d85-76d7-4c96-9a0a-59da190fa089))
-  (fp_poly
-    (pts
-      (xy -0.25 1.5)
-      (xy 0.25 1.5)
-      (xy 0.25 0.85)
-      (xy -0.25 0.85)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 4d50b254-6b69-4389-ade7-f2dbf0a51e50))
-  (fp_poly
-    (pts
-      (xy 0.7 -0.85)
-      (xy 1.2 -0.85)
-      (xy 1.2 -1.5)
-      (xy 0.7 -1.5)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp c2374b65-0a3c-411d-b3d1-807cf6d6daad))
-  (fp_poly
-    (pts
-      (xy 0.7 1.5)
-      (xy 1.2 1.5)
-      (xy 1.2 0.85)
-      (xy 0.7 0.85)
-    )
-
-    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 684fbe83-608e-4652-907c-93e03decab97))
-  (pad "1" smd rect (at -0.95 1.3001) (size 0.55 1.2) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp 7bed8eee-1d87-4e95-9c56-5cbb22c70d1d))
-  (pad "2" smd rect (at 0 1.3001) (size 0.55 1.2) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp 5204c39e-9d5e-4ad1-8367-8d9ba039ebd3))
-  (pad "3" smd rect (at 0.95 1.3001) (size 0.55 1.2) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp 53a1ff86-af0d-4143-babd-1d27988be5b3))
-  (pad "4" smd rect (at 0.95 -1.3001) (size 0.55 1.2) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp c2636bea-42a1-4855-a61d-ee79427b7ec4))
-  (pad "5" smd rect (at -0.95 -1.3001) (size 0.55 1.2) (layers "F.Cu" "F.Paste" "F.Mask")
-    (solder_mask_margin 0.03) (thermal_bridge_angle 45) (tstamp d377d629-e42d-424b-b32c-b8e58c706011))
+(footprint "ESP32_WROVER_SPARKFUN-IC-POWER_SOT23-5"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "<b>Small Outline Transistor</b>")
+	(property "Reference" "REF**"
+		(at -1.778 -2.159 0)
+		(layer "F.SilkS")
+		(uuid "5773020d-56c9-4343-85ee-8ad2c2755720")
+		(effects
+			(font
+				(size 0.48768 0.48768)
+				(thickness 0.12192)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "ESP32_WROVER_SPARKFUN-IC-POWER_SOT23-5"
+		(at -1.778 2.794 0)
+		(layer "F.Fab")
+		(uuid "ec886d9d-e2c2-476e-b6b3-6eb48f567745")
+		(effects
+			(font
+				(size 0.48768 0.48768)
+				(thickness 0.12192)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "18a7aa41-9f1c-439a-ad98-e3ec83f7b0ab")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7d036c2c-aa76-4bf0-b9b5-a50f55519241")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b1a58dc2-0337-44c1-ba09-ad55fdfc9bfc")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(fp_line
+		(start -1.27 0.4294)
+		(end -1.27 -0.4294)
+		(stroke
+			(width 0.2032)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0b8b01f6-f2d6-4e8a-8a59-251e408b83de")
+	)
+	(fp_line
+		(start -0.2684 -0.7088)
+		(end 0.2684 -0.7088)
+		(stroke
+			(width 0.2032)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "382be029-dba7-4829-b90a-e5a1ce3265c5")
+	)
+	(fp_line
+		(start 1.27 -0.4294)
+		(end 1.27 0.4294)
+		(stroke
+			(width 0.2032)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "24ec3c58-f0d0-47c6-a6a9-ba85a0d26622")
+	)
+	(fp_circle
+		(center -1.6002 1.016)
+		(end -1.5367 1.016)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.SilkS")
+		(uuid "7e265e35-4462-4c4e-9c00-35f8af466504")
+	)
+	(fp_line
+		(start -1.4 -0.8)
+		(end -1.4 0.8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "98680083-eb12-4f35-a854-0561485415e2")
+	)
+	(fp_line
+		(start -1.4 -0.8)
+		(end 1.4 -0.8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "728c8a80-c262-4665-933b-afbfaf9ff648")
+	)
+	(fp_line
+		(start 1.4 -0.8)
+		(end 1.4 0.8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "57e99434-44ea-4b6e-af03-db2840d8459a")
+	)
+	(fp_line
+		(start 1.4 0.8)
+		(end -1.4 0.8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "740e5215-5051-4b6c-ac50-d7cdfbf78ade")
+	)
+	(fp_poly
+		(pts
+			(xy -1.2 -0.85) (xy -0.7 -0.85) (xy -0.7 -1.5) (xy -1.2 -1.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "9a777b48-ee00-4a81-a587-f166650130a9")
+	)
+	(fp_poly
+		(pts
+			(xy -1.2 1.5) (xy -0.7 1.5) (xy -0.7 0.85) (xy -1.2 0.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "18cd5d85-76d7-4c96-9a0a-59da190fa089")
+	)
+	(fp_poly
+		(pts
+			(xy -0.25 1.5) (xy 0.25 1.5) (xy 0.25 0.85) (xy -0.25 0.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "4d50b254-6b69-4389-ade7-f2dbf0a51e50")
+	)
+	(fp_poly
+		(pts
+			(xy 0.7 -0.85) (xy 1.2 -0.85) (xy 1.2 -1.5) (xy 0.7 -1.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "c2374b65-0a3c-411d-b3d1-807cf6d6daad")
+	)
+	(fp_poly
+		(pts
+			(xy 0.7 1.5) (xy 1.2 1.5) (xy 1.2 0.85) (xy 0.7 0.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.Fab")
+		(uuid "684fbe83-608e-4652-907c-93e03decab97")
+	)
+	(pad "1" smd rect
+		(at -0.95 1.3001)
+		(size 0.55 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "7bed8eee-1d87-4e95-9c56-5cbb22c70d1d")
+	)
+	(pad "2" smd rect
+		(at 0 1.3001)
+		(size 0.55 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "5204c39e-9d5e-4ad1-8367-8d9ba039ebd3")
+	)
+	(pad "3" smd rect
+		(at 0.95 1.3001)
+		(size 0.55 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "53a1ff86-af0d-4143-babd-1d27988be5b3")
+	)
+	(pad "4" smd rect
+		(at 0.95 -1.3001)
+		(size 0.55 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "c2636bea-42a1-4855-a61d-ee79427b7ec4")
+	)
+	(pad "5" smd rect
+		(at -0.95 -1.3001)
+		(size 0.55 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.03)
+		(thermal_bridge_angle 45)
+		(uuid "d377d629-e42d-424b-b32c-b8e58c706011")
+	)
+	(model "D:/Facultate/anul_4/licenta/CAD/MCP73831T-2ACI_OT.STEP"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
 )

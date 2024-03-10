@@ -219,4 +219,15 @@
 		(solder_mask_margin 0.102)
 		(uuid "0679bc34-4062-49ad-a68c-a2b741841c2b")
 	)
+	(model "D:/Facultate/anul_4/licenta/CAD/XC8107AC20MR-G.STEP"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
 )
