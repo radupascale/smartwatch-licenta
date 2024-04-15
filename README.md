@@ -1,4 +1,1 @@
-## Referinte
-- [Hookup display esp32](https://dronebotworkshop.com/gc9a01/)
-- [Test display code](https://community.platformio.org/t/tft-display-works-in-arduino-ide-doesnt-in-platformio/33269/5)
-- [JLPCB DRC](https://gist.github.com/darkxst/f713268e5469645425eed40115fb8b49)
+## WIP
