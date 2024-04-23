@@ -31,15 +31,22 @@ int bmi_init()
 	return 0;
 }
 
-void bmi_read()
+struct bmi_data_t *bmi_read()
 {
-	float accelX, accelY, accelZ;
+	struct bmi_data_t *bmi_data;
+
+	bmi_data = (struct bmi_data_t *)heap_caps_malloc(sizeof(struct bmi_data_t),
+													 MALLOC_CAP_8BIT);
 
 	accel.readSensor();
+	bmi_data->accelX = accel.getAccelX_mss();
+	bmi_data->accelY = accel.getAccelY_mss();
+	bmi_data->accelZ = accel.getAccelZ_mss();
 
-	accelX = accel.getAccelX_mss();
-	accelY = accel.getAccelY_mss();
-	accelZ = accel.getAccelZ_mss();
+	gyro.readSensor();
+	bmi_data->gyroX = gyro.getGyroX_rads();
+	bmi_data->gyroY = gyro.getGyroY_rads();
+	bmi_data->gyroZ = gyro.getGyroZ_rads();
 
-	ESP_LOGI(TAG, "Accel: X: %f, Y: %f, Z: %f", accelX, accelY, accelZ);
+	return bmi_data;
 }
