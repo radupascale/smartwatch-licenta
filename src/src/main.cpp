@@ -1,16 +1,21 @@
-#include "bmi.h"
+#include "components/bmi.h"
+#include "components/display.h"
+#include "components/drv.h"
+#include "components/ppg.h"
+
 #include "core.h"
-#include "display.h"
 #include "driver/gpio.h"
-#include "drv.h"
 #include "esp_log.h"
 #include "esp_system.h"
+
 #include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
-#include "ppg.h"
 #include <stdio.h>
 
 static char const *TAG = "MAIN";
+static QueueHandle_t bmiQueue;
 
 // init function pointer array
 int (*init_functions[])() = {bmi_init, display_init, drv_init, ppg_init, NULL};
@@ -22,33 +27,61 @@ void os_init()
 
 	for (i = 0; init_functions[i] != NULL; i++) {
 		status = init_functions[i]();
-		if (status < 0)
-			vTaskDelete(NULL);
+		if (status < 0) {
+			ESP_LOGE(TAG, "Failed to initialize module %d.", i);
+		}
 	}
 
 	/* TODO: init SD */
 
 	/* TODO: other things to initialize (timers, buttons, wifi, bluetooth) */
 
+	bmiQueue = xQueueCreate(10, sizeof(bmi_data_t *));
+
 	ESP_LOGI(TAG, "Finish modules initialization.");
-	vTaskDelete(NULL);
 }
 
 void os_read_bmi(void *pvParameter)
 {
-    while (1) {
-        bmi_read();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+	struct bmi_data_t *bmi_data;
+
+	while (1) {
+		bmi_data = bmi_read();
+
+		if (xQueueSendToFront(bmiQueue, &bmi_data, pdMS_TO_TICKS(10)) ==
+			pdTRUE) {
+		}
+		vTaskDelay(pdMS_TO_TICKS(1000));
+	}
+}
+
+
+void os_update_display(void *pvParameter)
+{
+	struct bmi_data_t *bmi_data = NULL;
+
+	while (1) {
+		vTaskDelay(pdMS_TO_TICKS(10));
+
+		if (xQueueReceive(bmiQueue, &bmi_data, pdMS_TO_TICKS(10)) ==
+			pdTRUE) {
+			display_update_label(bmi_data);
+			heap_caps_free(bmi_data);
+		}
+
+		display_render();
+	}
 }
 
 extern "C" {
 void app_main()
 {
-    os_init();
+	os_init();
 
-    /* TODO: Actually create useful tasks */
-    xTaskCreatePinnedToCore(&os_read_bmi, "os_read_bmi", 8096, NULL, 5, NULL,
-                            APP_CPU_NUM);
+	/* TODO: Actually create useful tasks */
+	xTaskCreatePinnedToCore(&os_update_display, "os_update_display", 8096, NULL,
+							5, NULL, APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_read_bmi, "os_read_bmi", 2048, NULL,
+							5, NULL, APP_CPU_NUM);
 }
 };
