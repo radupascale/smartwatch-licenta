@@ -18,12 +18,20 @@ static char const *TAG = "MAIN";
 static QueueHandle_t bmiQueue;
 
 // init function pointer array
-int (*init_functions[])() = {bmi_init, display_init, drv_init, ppg_init, NULL};
+int (*init_functions[])() = {bmi_init, drv_init, ppg_init, NULL};
+
+static Display display;
 
 void os_init()
 {
 	int status;
 	int i;
+
+    status = display.init();
+    if (status < 0) 
+    {
+        ESP_LOGE(TAG, "Failed to initialize display.");
+    }
 
 	for (i = 0; init_functions[i] != NULL; i++) {
 		status = init_functions[i]();
@@ -65,11 +73,10 @@ void os_update_display(void *pvParameter)
 
 		if (xQueueReceive(bmiQueue, &bmi_data, pdMS_TO_TICKS(10)) ==
 			pdTRUE) {
-			display_update_label(bmi_data);
+            display.update_label(bmi_data);
 			heap_caps_free(bmi_data);
 		}
-
-		display_render();
+        display.render();
 	}
 }
 

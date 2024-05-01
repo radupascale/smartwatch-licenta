@@ -1,31 +1,23 @@
-#include "components/bmi.h"
-
 #include "display.h"
 #include "esp_log.h"
-#include <Arduino_GFX_Library.h>
-#include <lvgl.h>
 
 #define GFX_BL DF_GFX_BL
 
-
-static char const *TAG = "DISPLAY";
-Arduino_DataBus *bus = create_default_Arduino_DataBus();
-Arduino_GFX *gfx =
-	new Arduino_GC9A01(bus, DF_GFX_RST, 0 /* rotation */, true /* IPS */);
-uint32_t screenWidth;
-uint32_t screenHeight;
-uint32_t bufSize;
-lv_display_t *disp;
-lv_color_t *disp_draw_buf;
-lv_obj_t *label;
+Display *Display::instance = nullptr;
+static char const *DISPLAY_TAG = "DISPLAY";
 
 uint32_t millis_cb(void)
 {
 	return millis();
 }
 
-/* LVGL calls it when a rendered image needs to copied to the display*/
-void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
+Display::Display()
+{
+	this->instance = this;
+}
+
+void Display::flush_display(lv_display_t *disp, const lv_area_t *area,
+							uint8_t *px_map)
 {
 	uint32_t w = lv_area_get_width(area);
 	uint32_t h = lv_area_get_height(area);
@@ -34,9 +26,11 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 	lv_disp_flush_ready(disp);
 }
 
-int display_init()
+int Display::init()
 {
-	// Init Display
+	bus = create_default_Arduino_DataBus();
+	gfx = new Arduino_GC9A01(bus, DF_GFX_RST, 0 /* rotation */, true /* IPS */);
+
 	if (!gfx->begin()) {
 		Serial.println("gfx->begin() failed!");
 	}
@@ -66,11 +60,11 @@ int display_init()
 	}
 
 	if (!disp_draw_buf) {
-		ESP_LOGE(TAG, "Failed to allocate memory for display buffer");
+		ESP_LOGE(DISPLAY_TAG, "Failed to allocate memory for display buffer");
 		return -1;
 	} else {
 		disp = lv_display_create(screenWidth, screenHeight);
-		lv_display_set_flush_cb(disp, my_disp_flush);
+		lv_display_set_flush_cb(disp, flush_display_cb);
 		lv_display_set_buffers(disp, disp_draw_buf, NULL, bufSize * 2,
 							   LV_DISPLAY_RENDER_MODE_PARTIAL);
 		label = lv_label_create(lv_scr_act());
@@ -81,27 +75,29 @@ int display_init()
 		lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 	}
 
-	ESP_LOGI(TAG, "Display initialized");
+	ESP_LOGI(DISPLAY_TAG, "Display initialized");
 
-	/* TODO: Configure LVGL task handler */
 	return 0;
 }
 
-void display_update_label(bmi_data_t *bmi)
+void Display::update_label(bmi_data_t *bmi)
 {
-    float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
+	float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
 
-    accelX = bmi->accelX;
-    accelY = bmi->accelY;
-    accelZ = bmi->accelZ;
-    gyroX = bmi->gyroX;
-    gyroY = bmi->gyroY;
-    gyroZ = bmi->gyroZ;
+	accelX = bmi->accelX;
+	accelY = bmi->accelY;
+	accelZ = bmi->accelZ;
+	gyroX = bmi->gyroX;
+	gyroY = bmi->gyroY;
+	gyroZ = bmi->gyroZ;
 
-    lv_label_set_text_fmt(label, "AccelX: %.2f\nAccelY: %.2f\nAccelZ: %.2f\nGyroX: %.2f\nGyroY: %.2f\nGyroZ: %.2f", accelX, accelY, accelZ, gyroX, gyroY, gyroZ);
+	lv_label_set_text_fmt(label,
+						  "AccelX: %.2f\nAccelY: %.2f\nAccelZ: %.2f\nGyroX: "
+						  "%.2f\nGyroY: %.2f\nGyroZ: %.2f",
+						  accelX, accelY, accelZ, gyroX, gyroY, gyroZ);
 }
 
-void display_render()
+void Display::render()
 {
 	lv_task_handler();
 }
