@@ -14,7 +14,6 @@ class Display : Component
 	uint32_t bufSize;
 	lv_display_t *disp;
 	lv_color_t *disp_draw_buf;
-	lv_obj_t *label;
 
   public:
 	static Display *instance;
@@ -45,6 +44,5 @@ class Display : Component
 		instance->flush_display(disp, area, px_map);
 	}
 	void render();
-	void update_label(bmi_data_t *bmi);
 	int init() override;
 };

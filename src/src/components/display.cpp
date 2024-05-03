@@ -67,34 +67,11 @@ int Display::init()
 		lv_display_set_flush_cb(disp, flush_display_cb);
 		lv_display_set_buffers(disp, disp_draw_buf, NULL, bufSize * 2,
 							   LV_DISPLAY_RENDER_MODE_PARTIAL);
-		label = lv_label_create(lv_scr_act());
-		lv_label_set_text(
-			label,
-			"Hello Arduino, I'm LVGL!(V" GFX_STR(LVGL_VERSION_MAJOR) "." GFX_STR(
-				LVGL_VERSION_MINOR) "." GFX_STR(LVGL_VERSION_PATCH) ")");
-		lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 	}
 
 	ESP_LOGI(DISPLAY_TAG, "Display initialized");
 
 	return 0;
-}
-
-void Display::update_label(bmi_data_t *bmi)
-{
-	float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
-
-	accelX = bmi->accelX;
-	accelY = bmi->accelY;
-	accelZ = bmi->accelZ;
-	gyroX = bmi->gyroX;
-	gyroY = bmi->gyroY;
-	gyroZ = bmi->gyroZ;
-
-	lv_label_set_text_fmt(label,
-						  "AccelX: %.2f\nAccelY: %.2f\nAccelZ: %.2f\nGyroX: "
-						  "%.2f\nGyroY: %.2f\nGyroZ: %.2f",
-						  accelX, accelY, accelZ, gyroX, gyroY, gyroZ);
 }
 
 void Display::render()

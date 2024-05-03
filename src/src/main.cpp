@@ -15,7 +15,6 @@
 #include <stdio.h>
 
 static char const *TAG = "MAIN";
-static QueueHandle_t bmiQueue;
 
 // init function pointer array
 int (*init_functions[])() = {bmi_init, drv_init, ppg_init, NULL};
@@ -44,25 +43,8 @@ void os_init()
 
 	/* TODO: other things to initialize (timers, buttons, wifi, bluetooth) */
 
-	bmiQueue = xQueueCreate(10, sizeof(bmi_data_t *));
-
 	ESP_LOGI(TAG, "Finish modules initialization.");
 }
-
-void os_read_bmi(void *pvParameter)
-{
-	struct bmi_data_t *bmi_data;
-
-	while (1) {
-		bmi_data = bmi_read();
-
-		if (xQueueSendToFront(bmiQueue, &bmi_data, pdMS_TO_TICKS(10)) ==
-			pdTRUE) {
-		}
-		vTaskDelay(pdMS_TO_TICKS(1000));
-	}
-}
-
 
 void os_update_display(void *pvParameter)
 {
@@ -71,11 +53,6 @@ void os_update_display(void *pvParameter)
 	while (1) {
 		vTaskDelay(pdMS_TO_TICKS(10));
 
-		if (xQueueReceive(bmiQueue, &bmi_data, pdMS_TO_TICKS(10)) ==
-			pdTRUE) {
-            display.update_label(bmi_data);
-			heap_caps_free(bmi_data);
-		}
         display.render();
 	}
 }
@@ -87,8 +64,6 @@ void app_main()
 
 	/* TODO: Actually create useful tasks */
 	xTaskCreatePinnedToCore(&os_update_display, "os_update_display", 8096, NULL,
-							5, NULL, APP_CPU_NUM);
-	xTaskCreatePinnedToCore(&os_read_bmi, "os_read_bmi", 2048, NULL,
 							5, NULL, APP_CPU_NUM);
 }
 };
