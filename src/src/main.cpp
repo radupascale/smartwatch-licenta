@@ -3,6 +3,8 @@
 #include "components/drv.h"
 #include "components/ppg.h"
 
+#include "apps/watchface.h"
+
 #include "core.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
@@ -20,6 +22,8 @@ static char const *TAG = "MAIN";
 int (*init_functions[])() = {bmi_init, drv_init, ppg_init, NULL};
 
 static Display display;
+
+static WatchFace *watch_face = nullptr;
 
 void os_init()
 {
@@ -41,6 +45,10 @@ void os_init()
 
 	/* TODO: init SD */
 
+    /* Initialize applications */
+    watch_face = new WatchFace(&display);
+    watch_face->setup_ui();
+
 	/* TODO: other things to initialize (timers, buttons, wifi, bluetooth) */
 
 	ESP_LOGI(TAG, "Finish modules initialization.");
@@ -48,8 +56,6 @@ void os_init()
 
 void os_update_display(void *pvParameter)
 {
-	struct bmi_data_t *bmi_data = NULL;
-
 	while (1) {
 		vTaskDelay(pdMS_TO_TICKS(10));
 
