@@ -65,6 +65,7 @@ void os_init()
     /* Initialize applications */
     settings = new Settings(&display);
     settings->wifi_init();
+    settings->clock_init();
 
     watch_face = new WatchFace(&display);
     watch_face->setup_ui();

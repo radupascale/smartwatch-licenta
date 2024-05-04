@@ -99,3 +99,17 @@ void Settings::wifi_init(void)
 		ESP_LOGE(SETTINGS_TAG, "UNEXPECTED EVENT");
 	}
 }
+
+void Settings::clock_init(void)
+{
+	struct timeval tv;
+
+	sntp_setservername(0, "pool.ntp.org");
+	sntp_set_sync_mode(SNTP_SYNC_MODE_IMMED);
+	sntp_init();
+	sntp_sync_time(&tv);
+
+	/* Set timezone to romania */
+	setenv("TZ", "EET-2EEST,M3.5.0/3,M10.5.0/4", 1);
+	tzset();
+}
