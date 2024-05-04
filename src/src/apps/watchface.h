@@ -26,10 +26,6 @@ class WatchFace : App
 	{
 	}
 
-	void handle_event(void *event) override
-	{
-		return;
-	}
 	void setup_ui() override;
 	void update_ui() override;
 };

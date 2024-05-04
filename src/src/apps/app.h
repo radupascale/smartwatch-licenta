@@ -16,7 +16,6 @@ class App
 	{
 		this->display = display;
 	}
-	virtual void handle_event(void *event) = 0;
 	virtual void setup_ui() = 0;
 	virtual void update_ui() = 0;
 };
