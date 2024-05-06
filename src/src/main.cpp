@@ -48,11 +48,19 @@ void os_init()
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
 }
 
+void os_check_buttons(void *pvParameter)
+{
+    while(1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(5));
+        deviceManager->check_buttons();
+    }
+}
+
 void os_update_display(void *pvParameter)
 {
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(10));
-
+        vTaskDelay(pdMS_TO_TICKS(100));
         watch_face->update_ui();
         deviceManager->get_display()->render();
 	}
@@ -67,5 +75,7 @@ void app_main()
 	/* TODO: Actually create useful tasks */
 	xTaskCreatePinnedToCore(&os_update_display, "os_update_display", 8096, NULL,
 							5, NULL, APP_CPU_NUM);
+    xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
+                            5, NULL, APP_CPU_NUM);
 }
 };
