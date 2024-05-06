@@ -22,7 +22,7 @@ class WatchFace : App
     lv_style_t wifi_style;
 
   public:
-	WatchFace(Display *display) : App(display)
+	WatchFace(Display *display, Settings *settings) : App(display, settings)
 	{
 	}
 

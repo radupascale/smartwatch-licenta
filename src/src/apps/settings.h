@@ -1,5 +1,4 @@
 #pragma once
-#include "apps/app.h"
 
 #include "esp_event.h"
 #include "esp_log.h"
@@ -27,7 +26,7 @@ about
 #define WIFI_FAIL_BIT BIT1
 
 
-class Settings : App
+class Settings
 {
   private:
 	EventGroupHandle_t s_wifi_event_group;
@@ -36,9 +35,13 @@ class Settings : App
   public:
 	static Settings *instance;
 
-	Settings(Display *display) : App(display)
+	Settings()
 	{
-		this->instance = this;
+        if (this->instance != nullptr)
+        {
+            return;
+        }
+        this->instance = this;       
 	}
 
     static void event_handler_static(void *arg, esp_event_base_t event_base,
@@ -61,13 +64,4 @@ class Settings : App
      * 
      */
     void clock_init(void);
-
-	void setup_ui() override
-	{
-		return;
-	}
-	void update_ui() override
-	{
-		return;
-	}
 };

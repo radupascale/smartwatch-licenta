@@ -63,11 +63,11 @@ void os_init()
 	ESP_ERROR_CHECK(ret);
 
     /* Initialize applications */
-    settings = new Settings(&display);
+    settings = new Settings();
     settings->wifi_init();
     settings->clock_init();
 
-    watch_face = new WatchFace(&display);
+    watch_face = new WatchFace(&display, settings);
     watch_face->setup_ui();
 
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
