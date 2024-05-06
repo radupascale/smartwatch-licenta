@@ -1,7 +1,4 @@
-#include "components/bmi.h"
-#include "components/display.h"
-#include "components/drv.h"
-#include "components/ppg.h"
+#include "components/deviceManager.h"
 
 #include "apps/watchface.h"
 #include "apps/settings.h"
@@ -19,15 +16,7 @@
 
 static char const *MAIN_TAG = "MAIN";
 
-// init function pointer array
-int (*init_functions[])() = {bmi_init, drv_init, ppg_init, NULL};
-
-/**
- * @brief Components
- * 
- */
-static Display display;
-
+static DeviceManager *deviceManager;
 /**
  * @brief Applications
  * 
@@ -37,22 +26,8 @@ static Settings *settings = nullptr;
 
 void os_init()
 {
-	int status;
-	int i;
-
-    status = display.init();
-    if (status < 0)
-    {
-        ESP_LOGE(MAIN_TAG, "Failed to initialize display.");
-    }
-
-	/* TODO: init SD */
-	for (i = 0; init_functions[i] != NULL; i++) {
-		status = init_functions[i]();
-		if (status < 0) {
-			ESP_LOGE(MAIN_TAG, "Failed to initialize module %d.", i);
-		}
-	}
+    deviceManager = new DeviceManager();
+    deviceManager->init();
 
     /* TODO: Use NVS for persistent wifi configs */
 	esp_err_t ret = nvs_flash_init(); if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
@@ -67,7 +42,7 @@ void os_init()
     settings->wifi_init();
     settings->clock_init();
 
-    watch_face = new WatchFace(&display, settings);
+    watch_face = new WatchFace(deviceManager, settings);
     watch_face->setup_ui();
 
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
@@ -79,7 +54,7 @@ void os_update_display(void *pvParameter)
 		vTaskDelay(pdMS_TO_TICKS(10));
 
         watch_face->update_ui();
-        display.render();
+        deviceManager->get_display()->render();
 	}
 }
 

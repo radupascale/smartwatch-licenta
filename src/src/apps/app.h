@@ -1,32 +1,27 @@
 #pragma once
-#include "components/display.h"
+#include "components/deviceManager.h"
 
 #include "apps/settings.h"
 
 class App
 {
   private:
-	Display *display;
+	DeviceManager *deviceManager;
     Settings *settings;
 
   public:
-	/**
-	 * @brief Construct a new App object with the default display
-	 *
-	 * @param display
-	 */
-	App(Display *display)
+	App(DeviceManager *deviceManager)
 	{
-		this->display = display;
+        this->deviceManager = deviceManager;
 	}
 
     /**
      * @brief Constructor used by apps which querry the internal state
      * of the board.
      */
-    App(Display *display, Settings *settings)
+    App(DeviceManager *deviceManager, Settings *settings)
     {
-        this->display = display;
+        this->deviceManager = deviceManager;
         this->settings = settings;
     }
 
