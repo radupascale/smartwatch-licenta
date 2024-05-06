@@ -78,3 +78,13 @@ void Display::render()
 {
 	lv_task_handler();
 }
+
+void Display::disable()
+{
+    digitalWrite(GFX_BL, LOW);
+}
+
+void Display::enable()
+{
+    digitalWrite(GFX_BL, HIGH);
+}

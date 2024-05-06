@@ -19,6 +19,7 @@ class Display : Component
 	static Display *instance;
 
 	Display();
+    ~Display();
 
 	/**
 	 * @brief LVGL calls it when a rendered image needs to copied to the display
@@ -44,5 +45,8 @@ class Display : Component
 		instance->flush_display(disp, area, px_map);
 	}
 	void render();
-	int init() override;
+    int init() override;
+
+    void disable();
+    void enable();
 };
