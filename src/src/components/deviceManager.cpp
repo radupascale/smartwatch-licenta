@@ -41,6 +41,12 @@ void DeviceManager::init()
 	if (status < 0) {
 		ESP_LOGE(DEVTAG, "Failed to initialize display.");
 	}
+
+    imu = new IMU();
+    status = imu->init();
+    if (status < 0) {
+        ESP_LOGE(DEVTAG, "Failed to initialize IMU.");
+    }
 }
 
 DeviceManager *DeviceManager::get_instance()
@@ -51,6 +57,11 @@ DeviceManager *DeviceManager::get_instance()
 Display *DeviceManager::get_display()
 {
 	return this->display;
+}
+
+IMU *DeviceManager::get_imu()
+{
+    return this->imu;
 }
 
 void DeviceManager::handle_button_event_static(AceButton *, uint8_t eventType,

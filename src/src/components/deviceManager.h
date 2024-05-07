@@ -17,6 +17,7 @@ class DeviceManager
 {
   private:
 	Display *display;
+    IMU *imu;
 
 	/* Buttons */
 	AceButton *button_select;
@@ -38,4 +39,5 @@ class DeviceManager
                             uint8_t buttonState);
 
 	Display *get_display();
+    IMU *get_imu();
 };
