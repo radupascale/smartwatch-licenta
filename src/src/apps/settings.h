@@ -13,8 +13,8 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#define SSID "my_ssid"
-#define PASS "my_pass"
+#include "configs/configs.h"
+
 #define MAXIMUM_RETRY 3
 
 /* The event group allows multiple bits for each event, but we only care
