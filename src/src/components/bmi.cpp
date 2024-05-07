@@ -3,50 +3,53 @@
 #include "esp_log.h"
 #include "freertos/task.h"
 
-BMI085Accel accel(Wire, 0x18);
-BMI085Gyro gyro(Wire, 0x68);
+static const char *BMI_TAG = "BMI085";
 
-static const char *TAG = "BMI085";
+IMU::IMU()
+{
+    this->accel = new BMI085Accel(Wire, I2C_ACCEL);
+    this->gyro = new BMI085Gyro(Wire, I2C_GYRO);
+}
 
-int bmi_init()
+IMU::~IMU()
+{
+    delete accel;
+    delete gyro;
+}
+
+int IMU::init()
 {
 	int status;
 
-	status = accel.begin();
+	status = accel->begin();
 	if (status < 0) {
-		ESP_LOGE(TAG, "Failed to initalize accelerometer.");
+		ESP_LOGE(BMI_TAG, "Failed to initalize accelerometer.");
 		return -1;
 	}
-	ESP_LOGI(TAG, "Accelerometer initialized.");
+	ESP_LOGI(BMI_TAG, "Accelerometer initialized.");
 
-	status = gyro.begin();
+	status = gyro->begin();
 	if (status < 0) {
-		ESP_LOGE(TAG, "Failed to initalize gyroscope.");
+		ESP_LOGE(BMI_TAG, "Failed to initalize gyroscope.");
 		return -1;
 	}
-	ESP_LOGI(TAG, "Gyroscope initialized.");
+	ESP_LOGI(BMI_TAG, "Gyroscope initialized.");
 
 	/* TODO: Configure interrupts and ODR */
 
 	return 0;
 }
 
-struct bmi_data_t *bmi_read()
+void IMU::read_accel()
 {
-	struct bmi_data_t *bmi_data;
+	accel->readSensor();
 
-	bmi_data = (struct bmi_data_t *)heap_caps_malloc(sizeof(struct bmi_data_t),
-													 MALLOC_CAP_8BIT);
+    accel_data.x = accel->getAccelX_mss();
+    accel_data.y = accel->getAccelY_mss();
+    accel_data.z = accel->getAccelZ_mss();
+}
 
-	accel.readSensor();
-	bmi_data->accelX = accel.getAccelX_mss();
-	bmi_data->accelY = accel.getAccelY_mss();
-	bmi_data->accelZ = accel.getAccelZ_mss();
-
-	gyro.readSensor();
-	bmi_data->gyroX = gyro.getGyroX_rads();
-	bmi_data->gyroY = gyro.getGyroY_rads();
-	bmi_data->gyroZ = gyro.getGyroZ_rads();
-
-	return bmi_data;
+IMUData IMU::get_accel_data()
+{
+    return accel_data;
 }
