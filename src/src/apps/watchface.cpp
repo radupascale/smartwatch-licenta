@@ -5,6 +5,7 @@ LV_FONT_DECLARE(digital_7_72px);
 LV_FONT_DECLARE(digital_7_24px);
 LV_FONT_DECLARE(custom_symbols_14px);
 
+#define MAX_TIME_RETRY 5
 static char const *WATCHFACE_TAG = "WATCHFACE";
 /**
  * @brief Initialize labels for time, steps and weather.
