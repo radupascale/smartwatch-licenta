@@ -4,6 +4,7 @@
 LV_FONT_DECLARE(digital_7_72px);
 LV_FONT_DECLARE(digital_7_24px);
 LV_FONT_DECLARE(custom_symbols_14px);
+LV_IMAGE_DECLARE(moon);
 
 #define MAX_TIME_RETRY 5
 static char const *WATCHFACE_TAG = "WATCHFACE";
@@ -29,13 +30,21 @@ void WatchFace::setup_ui()
         retry++;
     }
 
+    /* Set background image */
+   lv_obj_t * icon = lv_image_create(lv_screen_active());
+
+    /*From variable*/
+    lv_image_set_src(icon, &moon); 
+
     /* Used style only for displaying symbols */
     lv_style_init(&symbol_style);
     lv_style_set_text_font(&symbol_style, &custom_symbols_14px); 
+    lv_style_set_text_color(&symbol_style, lv_color_make(0xff, 0xa5, 0x00));
 
     /* Display the current time and date*/
     lv_style_init(&time_style); 
     lv_style_set_text_font(&time_style, &digital_7_72px);
+    lv_style_set_text_color(&time_style, lv_color_make(0xFF, 0xFF, 0xFF));
     time_label = lv_label_create(lv_scr_act());
     lv_label_set_text_fmt(time_label, "%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
     lv_obj_add_style(time_label, &time_style, 0);
@@ -43,6 +52,7 @@ void WatchFace::setup_ui()
 
     lv_style_init(&date_style);
     lv_style_set_text_font(&date_style, &digital_7_24px);
+    lv_style_set_text_color(&date_style, lv_color_make(0xFF, 0xFF, 0xFF));
     date_label = lv_label_create(lv_scr_act());
     lv_label_set_text_fmt(date_label, "%02d/%02d/%02d", timeinfo.tm_mday, timeinfo.tm_mon + 1, timeinfo.tm_year + 100);
     lv_obj_add_style(date_label, &date_style, 0);
@@ -50,6 +60,7 @@ void WatchFace::setup_ui()
 
     lv_style_init(&steps_style);
     lv_style_set_text_font(&steps_style, &lv_font_montserrat_20);
+    lv_style_set_text_color(&steps_style, lv_color_make(0xFF, 0xFF, 0xFF));
     steps_label = lv_label_create(lv_scr_act());
     lv_label_set_text(steps_label, "123");
     lv_obj_add_style(steps_label, &steps_style, 0);
@@ -63,6 +74,7 @@ void WatchFace::setup_ui()
     /* Dummy weather */
     lv_style_init(&weather_style);
     lv_style_set_text_font(&weather_style, &lv_font_montserrat_20);
+    lv_style_set_text_color(&weather_style, lv_color_make(0xFF, 0xFF, 0xFF));
     weather_label = lv_label_create(lv_scr_act());
     lv_label_set_text(weather_label, "14°C");
     lv_obj_add_style(weather_label, &weather_style, 0);
@@ -75,6 +87,7 @@ void WatchFace::setup_ui()
 
     lv_style_init(&battery_style);
     lv_style_set_text_font(&battery_style, &lv_font_montserrat_20);
+    lv_style_set_text_color(&battery_style, lv_color_make(0xFF, 0xFF, 0xFF));
     battery_label = lv_label_create(lv_scr_act());
     lv_label_set_text(battery_label, LV_SYMBOL_BATTERY_1);
     lv_obj_add_style(battery_label, &battery_style, 0);
@@ -82,6 +95,7 @@ void WatchFace::setup_ui()
 
     lv_style_init(&wifi_style);
     lv_style_set_text_font(&wifi_style, &lv_font_montserrat_20);
+    lv_style_set_text_color(&wifi_style, lv_color_make(0xFF, 0xFF, 0xFF));
     wifi_label = lv_label_create(lv_scr_act());
     lv_label_set_text(wifi_label, LV_SYMBOL_WIFI);
     lv_obj_add_style(wifi_label, &wifi_style, 0);
