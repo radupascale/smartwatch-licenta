@@ -14,6 +14,10 @@
 #include "freertos/task.h"
 #include <stdio.h>
 
+/* BMI real time data */
+#include <HTTPClient.h>
+const char *serverName = "http://192.168.0.102:5000/send_data";
+
 static char const *MAIN_TAG = "MAIN";
 
 static DeviceManager *deviceManager;
@@ -48,6 +52,46 @@ void os_init()
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
 }
 
+void os_read_imu(void *pvParameter)
+{
+	HTTPClient http;
+
+	/* 5Hz reading interval */
+    http.begin(serverName);
+    http.addHeader("Content-Type", "application/json");
+	while (1) {
+		int http_response;
+		char payload[200];
+		time_t now;
+		IMUData data;
+		struct tm timeinfo;
+
+		time(&now);
+		localtime_r(&now, &timeinfo);
+		deviceManager->get_imu()->read_accel();
+		data = deviceManager->get_imu()->get_accel_data();
+
+		/* send payload */
+		sprintf(
+			(char *)payload,
+			"{\"time\": \"%02d:%02d:%02d\", \"x\": %f, \"y\": %f, \"z\": %f}",
+			timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, data.x, data.y,
+			data.z);
+
+		http_response = http.POST((uint8_t *)payload, strlen(payload));
+
+		ESP_LOGI(MAIN_TAG, "Payload: %s", payload);
+
+		if (http_response > 0) {
+			ESP_LOGI(MAIN_TAG, "HTTP Response code: %d", http_response);
+		} else {
+			ESP_LOGE(MAIN_TAG, "HTTP Response code: %d", http_response);
+		}
+
+		vTaskDelay(pdMS_TO_TICKS(200));
+	}
+}
+
 void os_check_buttons(void *pvParameter)
 {
     while(1)
@@ -77,5 +121,7 @@ void app_main()
 							5, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
                             5, NULL, APP_CPU_NUM);
+	// xTaskCreatePinnedToCore(&os_read_imu, "os_read_imu", 8096, NULL, 5, NULL,
+	// 						APP_CPU_NUM);
 }
 };
