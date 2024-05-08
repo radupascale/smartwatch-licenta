@@ -13,17 +13,19 @@ static char const *WATCHFACE_TAG = "WATCHFACE";
 void WatchFace::setup_ui()
 {
     /* Get the current time and date */
+    int retry = 0;
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
 
     /* Hacky, but whatever*/
-    while (timeinfo.tm_year < (2024 - 1900)) {
+    while (timeinfo.tm_year < (2024 - 1900) && retry < MAX_TIME_RETRY) {
         ESP_LOGI(WATCHFACE_TAG, "Waiting for system time to be set...");
         vTaskDelay(2000 / portTICK_PERIOD_MS);
         time(&now);
         localtime_r(&now, &timeinfo);
+        retry++;
     }
 
     /* Used style only for displaying symbols */
