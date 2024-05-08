@@ -67,8 +67,8 @@ void Settings::wifi_init(void)
 
 	wifi_config_t wifi_config;
 	memset(&wifi_config, 0, sizeof(wifi_config));
-	strncpy((char *)wifi_config.sta.ssid, SSID, sizeof(wifi_config.sta.ssid));
-	strncpy((char *)wifi_config.sta.password, PASS,
+	strncpy((char *)wifi_config.sta.ssid, MY_SSID, sizeof(wifi_config.sta.ssid));
+	strncpy((char *)wifi_config.sta.password, MY_PASS,
 			sizeof(wifi_config.sta.password));
 
 	wifi_config.sta.channel = 0;
@@ -90,8 +90,8 @@ void Settings::wifi_init(void)
 	/* xEventGroupWaitBits() returns the bits before the call returned, hence we
 	 * can test which event actually happened. */
 	if (bits & WIFI_CONNECTED_BIT) {
-		ESP_LOGI(SETTINGS_TAG, "connected to ap SSID:%s password:%s", SSID,
-				 PASS);
+		ESP_LOGI(SETTINGS_TAG, "connected to ap SSID:%s password:%s", MY_SSID,
+				 MY_PASS);
 	} else if (bits & WIFI_FAIL_BIT) {
 		ESP_LOGI(SETTINGS_TAG, "Failed to connect to SSID:%s, password:%s",
 				 wifi_config.sta.ssid, wifi_config.sta.password);

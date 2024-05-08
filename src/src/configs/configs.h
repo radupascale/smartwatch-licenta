@@ -3,5 +3,5 @@
 /**
  * Configure wifi connection before building
  */
-#define SSID ""
-#define PASS ""
+#define MY_SSID ""
+#define MY_PASS ""
