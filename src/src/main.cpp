@@ -1,7 +1,7 @@
 #include "components/deviceManager.h"
 
-#include "apps/watchface.h"
 #include "apps/settings.h"
+#include "apps/watchface.h"
 
 #include "core.h"
 #include "driver/gpio.h"
@@ -21,33 +21,30 @@ const char *serverName = "http://192.168.0.102:5000/send_data";
 static char const *MAIN_TAG = "MAIN";
 
 static DeviceManager *deviceManager;
-/**
- * @brief Applications
- * 
- */
-static WatchFace *watch_face = nullptr;
 static Settings *settings = nullptr;
+static WatchFace *watch_face = nullptr;
 
 void os_init()
 {
-    deviceManager = new DeviceManager();
-    deviceManager->init();
+	deviceManager = new DeviceManager();
+	deviceManager->init();
 
-    /* TODO: Use NVS for persistent wifi configs */
-	esp_err_t ret = nvs_flash_init(); if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+	/* TODO: Use NVS for persistent wifi configs */
+	esp_err_t ret = nvs_flash_init();
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
 		ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
 		ESP_ERROR_CHECK(nvs_flash_erase());
 		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
 
-    /* Initialize applications */
-    settings = new Settings();
-    settings->wifi_init();
-    settings->clock_init();
+	/* Initialize applications */
+	settings = new Settings();
+	settings->wifi_init();
+	settings->clock_init();
 
-    watch_face = new WatchFace(deviceManager, settings);
-    watch_face->setup_ui();
+	watch_face = new WatchFace(deviceManager, settings);
+	watch_face->setup_ui();
 
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
 }
@@ -94,11 +91,10 @@ void os_read_imu(void *pvParameter)
 
 void os_check_buttons(void *pvParameter)
 {
-    while(1)
-    {
-        vTaskDelay(pdMS_TO_TICKS(5));
-        deviceManager->check_buttons();
-    }
+	while (1) {
+		vTaskDelay(pdMS_TO_TICKS(5));
+		deviceManager->check_buttons();
+	}
 }
 
 void os_update_display(void *pvParameter)
@@ -109,7 +105,6 @@ void os_update_display(void *pvParameter)
         deviceManager->get_display()->render();
 	}
 }
-
 
 extern "C" {
 void app_main()
