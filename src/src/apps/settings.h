@@ -60,8 +60,20 @@ class Settings
     void wifi_init(void);
 
     /**
+     * @brief Wrapper around esp_wifi_stop
+     * 
+     */
+    void wifi_stop(void);
+
+    /**
      * @brief Init the system clock using SNTP (wifi connection is required)
      * 
      */
     void clock_init(void);
+
+    /**
+     * @brief Stops the sntp server
+     * 
+     */
+    void clock_deinit(void);
 };

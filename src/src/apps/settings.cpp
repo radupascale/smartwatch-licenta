@@ -100,6 +100,11 @@ void Settings::wifi_init(void)
 	}
 }
 
+void wifi_stop(void)
+{
+    esp_wifi_stop();
+}
+
 void Settings::clock_init(void)
 {
 	struct timeval tv;
@@ -112,4 +117,9 @@ void Settings::clock_init(void)
 	/* Set timezone to romania */
 	setenv("TZ", "EET-2EEST,M3.5.0/3,M10.5.0/4", 1);
 	tzset();
+}
+
+void Settings::clock_deinit(void)
+{
+    sntp_stop();
 }
