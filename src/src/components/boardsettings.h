@@ -26,16 +26,16 @@ about
 #define WIFI_FAIL_BIT BIT1
 
 
-class Settings
+class BoardSettings
 {
   private:
 	EventGroupHandle_t s_wifi_event_group;
 	int s_retry_num = 0;
 
   public:
-	static Settings *instance;
+	static BoardSettings *instance;
 
-	Settings()
+	BoardSettings()
 	{
         if (this->instance != nullptr)
         {

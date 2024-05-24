@@ -1,4 +1,4 @@
-#include "apps/settings.h"
+#include "components/boardsettings.h"
 
 #include "esp_attr.h"
 #include "esp_event.h"
@@ -16,9 +16,9 @@
 #include "esp_sntp.h"
 
 static const char *SETTINGS_TAG = "SETTINGS";
-Settings *Settings::instance = nullptr;
+BoardSettings *BoardSettings::instance = nullptr;
 
-void Settings::event_handler(void *arg, esp_event_base_t event_base,
+void BoardSettings::event_handler(void *arg, esp_event_base_t event_base,
 							 int32_t event_id, void *event_data)
 {
 	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
@@ -41,7 +41,7 @@ void Settings::event_handler(void *arg, esp_event_base_t event_base,
 	}
 }
 
-void Settings::wifi_init(void)
+void BoardSettings::wifi_init(void)
 {
 
 	ESP_LOGI(SETTINGS_TAG, "Initializing wifi.");
@@ -105,7 +105,7 @@ void wifi_stop(void)
     esp_wifi_stop();
 }
 
-void Settings::clock_init(void)
+void BoardSettings::clock_init(void)
 {
 	struct timeval tv;
 
@@ -119,7 +119,7 @@ void Settings::clock_init(void)
 	tzset();
 }
 
-void Settings::clock_deinit(void)
+void BoardSettings::clock_deinit(void)
 {
     sntp_stop();
 }

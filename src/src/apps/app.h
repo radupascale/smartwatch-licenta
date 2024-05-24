@@ -1,13 +1,12 @@
 #pragma once
 #include "components/deviceManager.h"
-
-#include "apps/settings.h"
+#include "components/boardsettings.h"
 
 class App
 {
   private:
 	DeviceManager *deviceManager;
-    Settings *settings;
+    BoardSettings *settings;
 
   public:
 	App(DeviceManager *deviceManager)
@@ -19,7 +18,7 @@ class App
      * @brief Constructor used by apps which querry the internal state
      * of the board.
      */
-    App(DeviceManager *deviceManager, Settings *settings)
+    App(DeviceManager *deviceManager, BoardSettings *settings)
     {
         this->deviceManager = deviceManager;
         this->settings = settings;

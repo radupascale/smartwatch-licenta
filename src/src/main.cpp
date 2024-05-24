@@ -1,4 +1,4 @@
-#include "apps/settings.h"
+#include "components/boardsettings.h"
 #include "apps/watchface.h"
 
 #include "core.h"
@@ -19,7 +19,7 @@ const char *serverName = "http://192.168.0.102:5000/send_data";
 static char const *MAIN_TAG = "MAIN";
 
 static DeviceManager *deviceManager;
-static Settings *settings = nullptr;
+static BoardSettings *settings = nullptr;
 static WatchFace *watch_face = nullptr;
 
 void os_init()
@@ -37,9 +37,9 @@ void os_init()
 	ESP_ERROR_CHECK(ret);
 
 	/* Initialize applications */
-	settings = new Settings();
-	// settings->wifi_init();
-	// settings->clock_init();
+	settings = new BoardSettings();
+	settings->wifi_init();
+	settings->clock_init();
 
 	watch_face = new WatchFace(deviceManager, settings);
 	watch_face->setup_ui();
