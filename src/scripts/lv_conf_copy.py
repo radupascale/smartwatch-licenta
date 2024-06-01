@@ -7,7 +7,7 @@ import shutil
 _summary_ Copy lv_conf.h to .pio/libdeps/lolin_s3_mini as required by lvlg
 """
 lv_conf_path = "./lv_conf.h"
-copy_path = "./.pio/libdeps"
+copy_path = "./.pio/libdeps/lolin_s3_mini"
 
 #print pwd
 print(f"Current directory: {os.getcwd()}")
