@@ -47,6 +47,12 @@ void DeviceManager::init()
     if (status < 0) {
         ESP_LOGE(DEVTAG, "Failed to initialize IMU.");
     }
+
+    drv = new DRV();
+    status = drv->init();
+    if (status < 0) {
+        ESP_LOGE(DEVTAG, "Failed to initialize DRV.");
+    }
 }
 
 DeviceManager *DeviceManager::get_instance()
@@ -62,6 +68,11 @@ Display *DeviceManager::get_display()
 IMU *DeviceManager::get_imu()
 {
     return this->imu;
+}
+
+DRV *DeviceManager::get_drv()
+{
+    return this->drv;
 }
 
 void DeviceManager::handle_button_event_static(AceButton *, uint8_t eventType,

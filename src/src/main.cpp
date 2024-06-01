@@ -1,5 +1,3 @@
-#include "components/deviceManager.h"
-
 #include "apps/settings.h"
 #include "apps/watchface.h"
 
@@ -40,8 +38,8 @@ void os_init()
 
 	/* Initialize applications */
 	settings = new Settings();
-	settings->wifi_init();
-	settings->clock_init();
+	// settings->wifi_init();
+	// settings->clock_init();
 
 	watch_face = new WatchFace(deviceManager, settings);
 	watch_face->setup_ui();
@@ -49,13 +47,20 @@ void os_init()
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
 }
 
+/**
+ * @brief Reads IMU data and sends them to a HTTP server for real-time
+ * graphing of X, Y, Z acceleration data (should be useful when implementing
+ * the pedometer algorithm)
+ *
+ * @param pvParameter NULL
+ */
 void os_read_imu(void *pvParameter)
 {
 	HTTPClient http;
 
 	/* 5Hz reading interval */
-    http.begin(serverName);
-    http.addHeader("Content-Type", "application/json");
+	http.begin(serverName);
+	http.addHeader("Content-Type", "application/json");
 	while (1) {
 		int http_response;
 		char payload[200];
@@ -89,6 +94,44 @@ void os_read_imu(void *pvParameter)
 	}
 }
 
+/**
+ * @brief Reads and prints accelerometer data to serial monitor every 200ms
+ *
+ * @param pvParameter NULL
+ */
+void os_read_imu_simple(void *pvParameter)
+{
+	IMU *imu = deviceManager->get_imu();
+	while (1) {
+		IMUData data;
+		imu->read_accel();
+		data = imu->get_accel_data();
+
+		ESP_LOGI(MAIN_TAG, "X: %f, Y: %f, Z: %f", data.x, data.y, data.z);
+		vTaskDelay(pdMS_TO_TICKS(200));
+	}
+}
+
+/**
+ * @brief Plays the first available effect of the Adafruit DRV library.
+ *
+ * @param pvParameter
+ */
+void os_play_drv_simple(void *pvParameter)
+{
+	DRV *drv = deviceManager->get_drv();
+	while (1) {
+		drv->play(1);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+	}
+}
+
+/**
+ * @brief Task which checks button events every 5ms (as mentioned in the
+ * ACEButton library README)
+ *
+ * @param pvParameter
+ */
 void os_check_buttons(void *pvParameter)
 {
 	while (1) {
@@ -100,9 +143,9 @@ void os_check_buttons(void *pvParameter)
 void os_update_display(void *pvParameter)
 {
 	while (1) {
-        vTaskDelay(pdMS_TO_TICKS(100));
-        watch_face->update_ui();
-        deviceManager->get_display()->render();
+		vTaskDelay(pdMS_TO_TICKS(100));
+		watch_face->update_ui();
+		deviceManager->get_display()->render();
 	}
 }
 
@@ -114,9 +157,13 @@ void app_main()
 	/* TODO: Actually create useful tasks */
 	xTaskCreatePinnedToCore(&os_update_display, "os_update_display", 8096, NULL,
 							5, NULL, APP_CPU_NUM);
-    xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
-                            5, NULL, APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
+							5, NULL, APP_CPU_NUM);
 	// xTaskCreatePinnedToCore(&os_read_imu, "os_read_imu", 8096, NULL, 5, NULL,
 	// 						APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_read_imu_simple, "os_read_imu_simple", 8096,
+							NULL, 5, NULL, APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_play_drv_simple, "os_play_drv_simple", 8096,
+							NULL, 5, NULL, APP_CPU_NUM);
 }
 };

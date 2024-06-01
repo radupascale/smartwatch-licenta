@@ -18,6 +18,7 @@ class DeviceManager
   private:
 	Display *display;
     IMU *imu;
+    DRV *drv;
 
 	/* Buttons */
 	AceButton *button_select;
@@ -40,4 +41,5 @@ class DeviceManager
 
 	Display *get_display();
     IMU *get_imu();
+    DRV *get_drv();
 };

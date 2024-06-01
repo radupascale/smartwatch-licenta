@@ -1,18 +1,17 @@
-#include "Adafruit_DRV2605.h"
 #include "esp_log.h"
-#include <Wire.h>
+#include "components/drv.h"
 
 static char const *TAG = "DRV2605";
-Adafruit_DRV2605 drv;
 
-int drv_init()
+int DRV::init()
 {
-	if (!drv.begin()) {
+	if (!drv->begin()) {
         ESP_LOGE(TAG, "Failed to initialize motor driver.");
+        return -1;
 	}
 
-	drv.selectLibrary(1);
-	drv.setMode(DRV2605_MODE_INTTRIG);
+	drv->selectLibrary(1);
+	drv->setMode(DRV2605_MODE_INTTRIG);
 	ESP_LOGI(TAG, "Motor driver initialized");
 
     /* TODO: Configure interrupt */
@@ -20,10 +19,21 @@ int drv_init()
     return 0;
 }
 
-void drv_play(int effect)
+void DRV::play(int effect)
 {
-	drv.setWaveform(0, effect);
-	drv.setWaveform(1, 0);
+    ESP_LOGI(TAG, "Playing effect %d", effect);
+	drv->setWaveform(0, effect);
+	drv->setWaveform(1, 0);
 
-	drv.go();
+	drv->go();
+}
+
+DRV::DRV()
+{
+    this->drv = new Adafruit_DRV2605();
+}
+
+DRV::~DRV()
+{
+    delete drv;
 }
