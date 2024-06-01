@@ -3,12 +3,16 @@ import random
 import time
 from datetime import datetime
 
-from flask import Flask, Response, render_template, stream_with_context, request
+from flask import (Flask, Response, render_template, request,
+                   stream_with_context)
 
 application = Flask(__name__)
 random.seed()  # Initialize the random number generator
 IP = '192.168.0.102'
 PORT = 5000
+
+OUTPUT_FILE = ""
+OUTPUT_DIR = "accel_data"
 
 @application.route('/')
 def index():
@@ -20,7 +24,9 @@ bmi_data = []
 def send_data():
     recv_data = request.json
     bmi_data.append(recv_data) 
-    print(recv_data) 
+    outFile = open(OUTPUT_FILE, '+a')
+    outFile.write(json.dumps(recv_data) + "\n")
+    outFile.close()
     return 'OK', 200
 
 def read_bmi_data():
@@ -40,4 +46,7 @@ def chart_data():
 
 
 if __name__ == '__main__':
+    # Unique name accel_stream + date_and_time
+    OUTPUT_FILE = OUTPUT_DIR + "/" + datetime.now().strftime("%H%M%S%d%m%Y") + ".json"
+    
     application.run(host=IP, port=PORT, debug=True)
