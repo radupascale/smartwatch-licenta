@@ -1,4 +1,4 @@
-#include "bmi.h"
+#include "components/bmi.h"
 #include "BMI085.h"
 #include "esp_log.h"
 #include "freertos/task.h"

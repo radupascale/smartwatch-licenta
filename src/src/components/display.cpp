@@ -1,4 +1,4 @@
-#include "display.h"
+#include "components/display.h"
 #include "esp_log.h"
 
 #define GFX_BL DF_GFX_BL

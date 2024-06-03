@@ -1,7 +1,9 @@
+#include "apps/watchface.h"
 #include "components/boardsettings.h"
 #include "apps/watchface.h"
 
-#include "core.h"
+#include "configs/core.h"
+#include "driver/adc.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_system.h"

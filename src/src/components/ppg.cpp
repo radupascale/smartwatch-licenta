@@ -1,4 +1,4 @@
-#include "ppg.h"
+#include "components/ppg.h"
 #include "MAX30105.h"
 #include "esp_log.h"
 #include <Wire.h>

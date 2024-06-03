@@ -1,5 +1,5 @@
 #include "components/deviceManager.h"
-#include "core.h"
+#include "configs/core.h"
 
 /* Singleton constructor */
 DeviceManager *DeviceManager::instance = nullptr;

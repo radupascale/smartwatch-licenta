@@ -1,3 +1,4 @@
+#include "configs/core.h"
 #include "components/boardsettings.h"
 
 #include "esp_attr.h"
