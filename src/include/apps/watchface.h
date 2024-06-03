@@ -1,9 +1,12 @@
 #pragma once
 #include "apps/app.h"
+#include "apps/pedometer.h"
 
 class WatchFace : App
 {
   private:
+    Pedometer *pedometer = nullptr;
+
     lv_style_t symbol_style;
 
 	lv_obj_t *time_label;
@@ -26,6 +29,7 @@ class WatchFace : App
 	{
 	}
 
+    void attach_pedometer(Pedometer *pedometer);
 	void setup_ui() override;
 	void update_ui() override;
 };

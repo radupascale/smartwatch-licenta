@@ -5,3 +5,9 @@
  */
 #define MY_SSID ""
 #define MY_PASS ""
+
+/**
+ * @brief Maximum tries to wait for sntp
+ * 
+ */
+#define MAX_TIME_RETRY 3

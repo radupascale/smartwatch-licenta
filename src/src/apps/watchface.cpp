@@ -103,5 +103,13 @@ void WatchFace::update_ui()
     lv_label_set_text_fmt(time_label, "%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
     lv_label_set_text_fmt(date_label, "%02d/%02d/%02d", timeinfo.tm_mday, timeinfo.tm_mon + 1, timeinfo.tm_year + 1900);
 
-    return;
+	/* Update step count if the pedometer is attached */
+	if (pedometer != NULL) {
+		lv_label_set_text_fmt(steps_label, "%d", pedometer->get_steps());
+	}
+}
+
+void WatchFace::attach_pedometer(Pedometer *pedometer)
+{
+	this->pedometer = pedometer;
 }

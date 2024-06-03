@@ -41,7 +41,7 @@ class BoardSettings
         {
             return;
         }
-        this->instance = this;       
+        this->instance = this; 
 	}
 
     static void event_handler_static(void *arg, esp_event_base_t event_base,
@@ -86,4 +86,27 @@ class BoardSettings
     void clock_deinit(void);
 
     void deep_sleep(void);
+
+    void init_pedometer_nvs_flash(void);
+
+    /**
+     * @brief Writes a blob to NVS overwritting any existing values
+     * Reference https://github.com/espressif/esp-idf/blob/v5.2.1/examples/storage/nvs_rw_blob/main/nvs_blob_example_main.c.
+     * 
+     * @param key 
+     * @param value 
+     * @param size 
+     * @return esp_err_t 
+     */
+    esp_err_t write_to_nvs(const char *key, void *value, uint32_t size, const char *partition);
+
+    /**
+     * @brief Reads blob object from NVS if it exists at the given KEY
+     * Reference https://github.com/espressif/esp-idf/blob/v5.2.1/examples/storage/nvs_rw_blob/main/nvs_blob_example_main.c.
+     * 
+     * @param key 
+     * @param size 
+     * @return void* 
+     */
+    void* read_from_nvs(const char *key, uint32_t size, const char *partition);
 };

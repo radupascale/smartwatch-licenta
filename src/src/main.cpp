@@ -1,10 +1,11 @@
 #include "apps/watchface.h"
+#include "apps/pedometer.h"
 #include "components/boardsettings.h"
-#include "apps/watchface.h"
 
 #include "configs/core.h"
 #include "driver/adc.h"
 #include "driver/gpio.h"
+#include "esp_adc_cal.h"
 #include "esp_log.h"
 #include "esp_system.h"
 
@@ -14,15 +15,12 @@
 #include "freertos/task.h"
 #include <stdio.h>
 
-/* BMI real time data */
-#include <HTTPClient.h>
-const char *serverName = "http://192.168.0.102:5000/send_data";
-
 static char const *MAIN_TAG = "MAIN";
 
-static DeviceManager *deviceManager;
+static DeviceManager *deviceManager = nullptr;
 static BoardSettings *settings = nullptr;
 static WatchFace *watch_face = nullptr;
+static Pedometer *pedometer = nullptr;
 
 void wait_for_sntp()
 {
@@ -45,12 +43,16 @@ void wait_for_sntp()
 
 void os_init()
 {
+    esp_err_t ret;
+
 	settings = new BoardSettings();
+    settings->init_pedometer_nvs_flash();
+
 	deviceManager = new DeviceManager();
 	deviceManager->init(settings);
 
 	/* TODO: Use NVS for persistent wifi configs */
-	esp_err_t ret = nvs_flash_init();
+	ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
 		ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
 		ESP_ERROR_CHECK(nvs_flash_erase());
@@ -63,88 +65,42 @@ void os_init()
 	settings->clock_init();
     wait_for_sntp();
 
+    pedometer = new Pedometer(deviceManager, settings);
+
 	watch_face = new WatchFace(deviceManager, settings);
+    watch_face->attach_pedometer(pedometer);
 	watch_face->setup_ui();
 
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization.");
 }
 
-/**
- * @brief Reads IMU data and sends them to a HTTP server for real-time
- * graphing of X, Y, Z acceleration data (should be useful when implementing
- * the pedometer algorithm)
- *
- * @param pvParameter NULL
- */
-void os_read_imu(void *pvParameter)
+void os_update_display(void *pvParameter)
 {
-	HTTPClient http;
-
-	/* 5Hz reading interval */
-	http.begin(serverName);
-	http.addHeader("Content-Type", "application/json");
 	while (1) {
-		int http_response;
-		char payload[200];
-		time_t now;
-		IMUData data;
-		struct tm timeinfo;
-
-		time(&now);
-		localtime_r(&now, &timeinfo);
-		deviceManager->get_imu()->read_accel();
-		data = deviceManager->get_imu()->get_accel_data();
-
-		/* send payload */
-		sprintf(
-			(char *)payload,
-			"{\"time\": \"%02d:%02d:%02d\", \"x\": %f, \"y\": %f, \"z\": %f}",
-			timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, data.x, data.y,
-			data.z);
-
-		http_response = http.POST((uint8_t *)payload, strlen(payload));
-
-		ESP_LOGI(MAIN_TAG, "Payload: %s", payload);
-
-		if (http_response > 0) {
-			ESP_LOGI(MAIN_TAG, "HTTP Response code: %d", http_response);
-		} else {
-			ESP_LOGE(MAIN_TAG, "HTTP Response code: %d", http_response);
-		}
-
 		vTaskDelay(pdMS_TO_TICKS(200));
+		watch_face->update_ui();
+		deviceManager->get_display()->render();
 	}
 }
 
-/**
- * @brief Reads and prints accelerometer data to serial monitor every 200ms
- *
- * @param pvParameter NULL
- */
-void os_read_imu_simple(void *pvParameter)
+void os_pedometer(void *pvParameter)
 {
-	IMU *imu = deviceManager->get_imu();
-	while (1) {
-		IMUData data;
-		imu->read_accel();
-		data = imu->get_accel_data();
+    steps_t step_count;
+    steps_t last_step_count = pedometer->get_steps();
+    steps_t delta = 10;
+    pedometer->reset_algorithm();
 
-		ESP_LOGI(MAIN_TAG, "X: %f, Y: %f, Z: %f", data.x, data.y, data.z);
-		vTaskDelay(pdMS_TO_TICKS(200));
-	}
-}
-
-/**
- * @brief Plays the first available effect of the Adafruit DRV library.
- *
- * @param pvParameter
- */
-void os_play_drv_simple(void *pvParameter)
-{
-	DRV *drv = deviceManager->get_drv();
 	while (1) {
-		drv->play(1);
-		vTaskDelay(pdMS_TO_TICKS(1000));
+        pedometer->count_steps();
+
+        step_count = pedometer->get_steps();
+
+        if (step_count - last_step_count > delta)
+        {
+            last_step_count = step_count;
+            pedometer->write_todays_steps();
+        }
+		vTaskDelay(pdMS_TO_TICKS(20));
 	}
 }
 
@@ -162,30 +118,21 @@ void os_check_buttons(void *pvParameter)
 	}
 }
 
-void os_update_display(void *pvParameter)
-{
-	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(100));
-		watch_face->update_ui();
-		deviceManager->get_display()->render();
-	}
-}
 
 extern "C" {
 void app_main()
 {
 	os_init();
 
-	/* TODO: Actually create useful tasks */
 	xTaskCreatePinnedToCore(&os_update_display, "os_update_display", 8096, NULL,
 							5, NULL, APP_CPU_NUM);
 	xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
 							5, NULL, APP_CPU_NUM);
-	// xTaskCreatePinnedToCore(&os_read_imu, "os_read_imu", 8096, NULL, 5, NULL,
-	// 						APP_CPU_NUM);
-	xTaskCreatePinnedToCore(&os_read_imu_simple, "os_read_imu_simple", 8096,
-							NULL, 5, NULL, APP_CPU_NUM);
-	xTaskCreatePinnedToCore(&os_play_drv_simple, "os_play_drv_simple", 8096,
-							NULL, 5, NULL, APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_pedometer, "os_pedometer", 8096, NULL, 5, NULL,
+							APP_CPU_NUM);
+#if TEST_IMU
+	xTaskCreatePinnedToCore(&os_toggle_imu, "os_toggle_imu", 8096, NULL, 5,
+							NULL, APP_CPU_NUM);
+#endif
 }
 };

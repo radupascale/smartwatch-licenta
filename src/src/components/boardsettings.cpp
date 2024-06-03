@@ -1,5 +1,5 @@
-#include "configs/core.h"
 #include "components/boardsettings.h"
+#include "configs/core.h"
 
 #include "esp_attr.h"
 #include "esp_event.h"
@@ -20,7 +20,7 @@ static const char *SETTINGS_TAG = "SETTINGS";
 BoardSettings *BoardSettings::instance = nullptr;
 
 void BoardSettings::event_handler(void *arg, esp_event_base_t event_base,
-							 int32_t event_id, void *event_data)
+								  int32_t event_id, void *event_data)
 {
 	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
 		esp_wifi_connect();
@@ -68,7 +68,8 @@ void BoardSettings::wifi_init(void)
 
 	wifi_config_t wifi_config;
 	memset(&wifi_config, 0, sizeof(wifi_config));
-	strncpy((char *)wifi_config.sta.ssid, MY_SSID, sizeof(wifi_config.sta.ssid));
+	strncpy((char *)wifi_config.sta.ssid, MY_SSID,
+			sizeof(wifi_config.sta.ssid));
 	strncpy((char *)wifi_config.sta.password, MY_PASS,
 			sizeof(wifi_config.sta.password));
 
@@ -101,9 +102,21 @@ void BoardSettings::wifi_init(void)
 	}
 }
 
-void wifi_stop(void)
+void BoardSettings::wifi_stop(void)
 {
-    esp_wifi_stop();
+	esp_wifi_stop();
+}
+
+void BoardSettings::wifi_start(void)
+{
+	esp_wifi_start();
+}
+
+void BoardSettings::deep_sleep(void)
+{
+	wifi_stop();
+	ESP_LOGI(SETTINGS_TAG, "Entering deep sleep");
+	esp_deep_sleep_start();
 }
 
 void BoardSettings::clock_init(void)
@@ -122,5 +135,95 @@ void BoardSettings::clock_init(void)
 
 void BoardSettings::clock_deinit(void)
 {
-    sntp_stop();
+	sntp_stop();
+}
+
+void BoardSettings::init_pedometer_nvs_flash(void)
+{
+	esp_err_t ret = nvs_flash_init_partition(NVS_PEDOMETER_PART);
+
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+		ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+		ESP_ERROR_CHECK(nvs_flash_erase_partition(NVS_PEDOMETER_PART));
+		ret = nvs_flash_init_partition(NVS_PEDOMETER_PART);
+		ESP_ERROR_CHECK(ret);
+		ESP_LOGI(SETTINGS_TAG, "Return value: %s", esp_err_to_name(ret));
+	}
+	ESP_LOGI(SETTINGS_TAG, "NVS partition %s initialized", NVS_PEDOMETER_PART);
+}
+
+esp_err_t BoardSettings::write_to_nvs(const char *key, void *value,
+									  uint32_t size, const char *partition)
+{
+	nvs_handle_t handler;
+	esp_err_t err = ESP_OK;
+
+	err = nvs_open_from_partition(partition, DEFAULT_NAMESPACE, NVS_READWRITE,
+								  &handler);
+	if (err != ESP_OK) {
+		ESP_LOGE(SETTINGS_TAG, "Error (%s) opening NVS handle",
+				 esp_err_to_name(err));
+		return err;
+	}
+
+	/* This will overwrite the value at the nvs location if it exists */
+	err = nvs_set_blob(handler, key, value, size);
+	if (err != ESP_OK) {
+		ESP_LOGE(SETTINGS_TAG, "Error (%s) writing to NVS",
+				 esp_err_to_name(err));
+		goto exit;
+	}
+
+	err = nvs_commit(handler);
+	if (err != ESP_OK) {
+		ESP_LOGE(SETTINGS_TAG, "Error (%s) flashing to NVS",
+				 esp_err_to_name(err));
+	}
+
+exit:
+	nvs_close(handler);
+
+    ESP_LOGI(SETTINGS_TAG, "Finish writing to NVS");
+	return err;
+}
+
+void *BoardSettings::read_from_nvs(const char *key, uint32_t size,
+								   const char *partition)
+{
+	nvs_handle_t handler;
+	esp_err_t err;
+	uint32_t len;
+	void *value = NULL;
+
+	err = nvs_open_from_partition(partition, DEFAULT_NAMESPACE, NVS_READWRITE,
+								  &handler);
+	if (err != ESP_OK) {
+		ESP_LOGE(SETTINGS_TAG, "Error (%s) opening NVS handle",
+				 esp_err_to_name(err));
+	}
+
+	err = nvs_get_blob(handler, key, NULL, &len);
+	if (err != ESP_OK) {
+		ESP_LOGE(SETTINGS_TAG, "Error (%s) reading from NVS handle",
+				 esp_err_to_name(err));
+		goto exit;
+	}
+
+	if (len == 0) {
+		ESP_LOGI(SETTINGS_TAG, "No value set at key %s in NVS partition %s",
+				 key, partition);
+	} else {
+		value = malloc(len);
+		err = nvs_get_blob(handler, key, value, &len);
+		if (err != ESP_OK) {
+			ESP_LOGE(SETTINGS_TAG, "Error (%s) reading from NVS handle",
+					 esp_err_to_name(err));
+			free(value);
+		}
+	}
+
+exit:
+	nvs_close(handler);
+    ESP_LOGI(SETTINGS_TAG, "Finish reading from NVS");
+	return value;
 }

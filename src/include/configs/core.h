@@ -16,4 +16,7 @@
 
 #define TEST_IMU 0
 
+#define NVS_PEDOMETER_PART "pedometer"
+#define DEFAULT_NAMESPACE "default"
+
 void os_init();
