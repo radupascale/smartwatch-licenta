@@ -6,8 +6,7 @@ LV_FONT_DECLARE(digital_7_24px);
 LV_FONT_DECLARE(custom_symbols_14px);
 LV_IMAGE_DECLARE(moon);
 
-#define MAX_TIME_RETRY 5
-static char const *WATCHFACE_TAG = "WATCHFACE";
+static char const *TAG = "WATCHFACE";
 /**
  * @brief Initialize labels for time, steps and weather.
  * 
@@ -15,20 +14,10 @@ static char const *WATCHFACE_TAG = "WATCHFACE";
 void WatchFace::setup_ui()
 {
     /* Get the current time and date */
-    int retry = 0;
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
-
-    /* Hacky, but whatever*/
-    while (timeinfo.tm_year < (2024 - 1900) && retry < MAX_TIME_RETRY) {
-        ESP_LOGI(WATCHFACE_TAG, "Waiting for system time to be set...");
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-        time(&now);
-        localtime_r(&now, &timeinfo);
-        retry++;
-    }
 
     /* Set background image */
    lv_obj_t * icon = lv_image_create(lv_screen_active());

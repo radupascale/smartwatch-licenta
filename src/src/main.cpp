@@ -24,6 +24,25 @@ static DeviceManager *deviceManager;
 static BoardSettings *settings = nullptr;
 static WatchFace *watch_face = nullptr;
 
+void wait_for_sntp()
+{
+	/* Get the current time and date */
+	int retry = 0;
+	time_t now;
+	struct tm timeinfo;
+	time(&now);
+	localtime_r(&now, &timeinfo);
+
+	/* Hacky, but whatever*/
+	while (timeinfo.tm_year < (2024 - 1900) && retry < MAX_TIME_RETRY) {
+		ESP_LOGI(MAIN_TAG, "Waiting for system time to be set...");
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
+		time(&now);
+		localtime_r(&now, &timeinfo);
+		retry++;
+	}
+}
+
 void os_init()
 {
 	settings = new BoardSettings();
@@ -42,6 +61,7 @@ void os_init()
 	/* Initialize applications */
 	settings->wifi_init();
 	settings->clock_init();
+    wait_for_sntp();
 
 	watch_face = new WatchFace(deviceManager, settings);
 	watch_face->setup_ui();
