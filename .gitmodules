@@ -1,0 +1,3 @@
+[submodule "src/lib/C-Step-Counter-esp"]
+	path = src/lib/C-Step-Counter-esp
+	url = git@github.com:radupascale/C-Step-Counter-esp.git
