@@ -863,28 +863,14 @@ bool BMI085Accel::getDrdyStatus()
 void BMI085Accel::readSensor()
 {
   /* accel data */
-  uint16_t temp_uint11;
   int16_t accel[3], temp_int11;
-  readRegisters(ACC_ACCEL_DATA_ADDR,9,_buffer);
+  readRegisters(ACC_ACCEL_DATA_ADDR,6,_buffer);
   accel[0] = (_buffer[1] << 8) | _buffer[0];
   accel[1] = (_buffer[3] << 8) | _buffer[2];
   accel[2] = (_buffer[5] << 8) | _buffer[4];
   accel_mss[0] = (float) (accel[0] * tX[0] + accel[1] * tX[1] + accel[2] * tX[2]) / 32768.0f * accel_range_mss;
   accel_mss[1] = (float) (accel[0] * tY[0] + accel[1] * tY[1] + accel[2] * tY[2]) / 32768.0f * accel_range_mss;
   accel_mss[2] = (float) (accel[0] * tZ[0] + accel[1] * tZ[1] + accel[2] * tZ[2]) / 32768.0f * accel_range_mss;
-  /* time data */
-  current_time_counter = (_buffer[8] << 16) | (_buffer[7] << 8) | _buffer[6];
-  time_counter = current_time_counter - prev_time_counter;
-  prev_time_counter = current_time_counter;
-  /* temperature data */
-  readRegisters(ACC_TEMP_DATA_ADDR,2,_buffer);
-  temp_uint11 = (_buffer[0] * 8) + (_buffer[1] / 32);
-  if (temp_uint11 > 1023) {
-    temp_int11 = temp_uint11 - 2048;
-  } else {
-    temp_int11 = temp_uint11;
-  }
-  temp_c = (float) temp_int11 * 0.125f + 23.0f;
 }
 
 /* returns the x acceleration, m/s/s */
