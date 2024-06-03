@@ -13,10 +13,12 @@ DeviceManager::DeviceManager()
 	this->instance = this;
 }
 
-void DeviceManager::init()
+void DeviceManager::init(BoardSettings *settings)
 {
 	ButtonConfig *select_config, *up_down_config;
 	int status;
+
+    this->settings = settings;
 
 	/* Initialize buttons */
 	select_config = new ButtonConfig();
