@@ -26,8 +26,9 @@ static WatchFace *watch_face = nullptr;
 
 void os_init()
 {
+	settings = new BoardSettings();
 	deviceManager = new DeviceManager();
-	deviceManager->init();
+	deviceManager->init(settings);
 
 	/* TODO: Use NVS for persistent wifi configs */
 	esp_err_t ret = nvs_flash_init();
@@ -39,7 +40,6 @@ void os_init()
 	ESP_ERROR_CHECK(ret);
 
 	/* Initialize applications */
-	settings = new BoardSettings();
 	settings->wifi_init();
 	settings->clock_init();
 

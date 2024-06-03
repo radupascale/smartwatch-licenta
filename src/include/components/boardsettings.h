@@ -62,8 +62,16 @@ class BoardSettings
     /**
      * @brief Wrapper around esp_wifi_stop
      * 
+     * 
      */
     void wifi_stop(void);
+
+    /**
+     * @brief Wrapper around esp_wifi_start, assumes that wifi_init
+     * was called beforehand
+     * 
+     */
+    void wifi_start(void);
 
     /**
      * @brief Init the system clock using SNTP (wifi connection is required)
@@ -76,4 +84,6 @@ class BoardSettings
      * 
      */
     void clock_deinit(void);
+
+    void deep_sleep(void);
 };

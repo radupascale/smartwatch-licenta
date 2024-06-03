@@ -7,6 +7,7 @@
 #include "components/drv.h"
 #include "components/ppg.h"
 #include "components/sd.h"
+#include "components/boardsettings.h"
 
 using namespace ace_button;
 /**
@@ -19,6 +20,7 @@ class DeviceManager
 	Display *display;
     IMU *imu;
     DRV *drv;
+    BoardSettings *settings;
 
 	/* Buttons */
 	AceButton *button_select;
@@ -31,7 +33,7 @@ class DeviceManager
 	DeviceManager *get_instance();
 	DeviceManager();
 	~DeviceManager();
-	void init();
+	void init(BoardSettings *settings);
 
 	void check_buttons();
     static void handle_button_event_static(AceButton * /* button */, uint8_t eventType,
