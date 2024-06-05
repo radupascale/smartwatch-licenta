@@ -118,7 +118,7 @@ void os_check_buttons(void *pvParameter)
 	}
 }
 
-
+#ifndef UNIT_TEST
 extern "C" {
 void app_main()
 {
@@ -136,3 +136,4 @@ void app_main()
 #endif
 }
 };
+#endif
