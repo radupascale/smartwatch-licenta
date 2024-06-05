@@ -13,6 +13,7 @@
 #define MOSI 35
 #define SS_SD 3
 #define SS_TFT 17
+#define EN_DRV GPIO_NUM_13
 
 #define TEST_IMU 0
 
