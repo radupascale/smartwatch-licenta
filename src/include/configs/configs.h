@@ -11,3 +11,11 @@
  * 
  */
 #define MAX_TIME_RETRY 3
+
+
+/**
+ * @brief Test defines
+ * 
+ */
+#define TEST_IMU 0
+#define TEST_DRV 1
