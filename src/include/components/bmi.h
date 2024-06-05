@@ -23,7 +23,7 @@ class IMU : Component
     public:
     IMU();
     ~IMU();
-    int init() override;
+    esp_err_t init() override;
     void read_accel();
     IMUData get_accel_data();
 };

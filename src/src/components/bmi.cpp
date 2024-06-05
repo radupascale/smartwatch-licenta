@@ -17,27 +17,30 @@ IMU::~IMU()
     delete gyro;
 }
 
-int IMU::init()
+esp_err_t IMU::init()
 {
-	int status;
+	esp_err_t err = ESP_OK;
 
-	status = accel->begin();
-	if (status < 0) {
+	if (accel->begin() < 0) {
 		ESP_LOGE(BMI_TAG, "Failed to initalize accelerometer.");
-		return -1;
+		return ESP_FAIL;
 	}
 	ESP_LOGI(BMI_TAG, "Accelerometer initialized.");
 
-	status = gyro->begin();
-	if (status < 0) {
+	if (gyro->begin() < 0) {
 		ESP_LOGE(BMI_TAG, "Failed to initalize gyroscope.");
-		return -1;
+		return ESP_FAIL;
 	}
 	ESP_LOGI(BMI_TAG, "Gyroscope initialized.");
 
 	/* TODO: Configure interrupts and ODR */
 
-	return 0;
+    /** Accelerometer is used only for step counting => set a lower sampling rate
+     * (25Hz with a 3Hz low pass)
+     */
+    // accel->setOdr(accel->ODR_25HZ_BW_3HZ);
+
+	return err;
 }
 
 void IMU::read_accel()

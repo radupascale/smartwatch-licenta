@@ -1,10 +1,11 @@
 #include "components/display.h"
+#include "configs/core.h"
 #include "esp_log.h"
 
 #define GFX_BL DF_GFX_BL
 
 Display *Display::instance = nullptr;
-static char const *DISPLAY_TAG = "DISPLAY";
+static char const *TAG = "DISPLAY";
 
 uint32_t millis_cb(void)
 {
@@ -26,19 +27,25 @@ void Display::flush_display(lv_display_t *disp, const lv_area_t *area,
 	lv_disp_flush_ready(disp);
 }
 
-int Display::init()
+esp_err_t Display::init()
 {
 	bus = create_default_Arduino_DataBus();
 	gfx = new Arduino_GC9A01(bus, DF_GFX_RST, 0 /* rotation */, true /* IPS */);
 
 	if (!gfx->begin()) {
-		Serial.println("gfx->begin() failed!");
+		ESP_LOGE(TAG, "Failed to initialize GFX");
+		return ESP_FAIL;
 	}
 	gfx->fillScreen(BLACK);
 
 #ifdef GFX_BL
 	pinMode(GFX_BL, OUTPUT);
 	digitalWrite(GFX_BL, HIGH);
+#endif
+
+#ifdef SS_TFT
+    pinMode(SS_TFT, OUTPUT);
+    digitalWrite(SS_TFT, HIGH);
 #endif
 
 	lv_init();
@@ -60,8 +67,8 @@ int Display::init()
 	}
 
 	if (!disp_draw_buf) {
-		ESP_LOGE(DISPLAY_TAG, "Failed to allocate memory for display buffer");
-		return -1;
+		ESP_LOGE(TAG, "Failed to allocate memory for display buffer");
+		return ESP_FAIL;
 	} else {
 		disp = lv_display_create(screenWidth, screenHeight);
 		lv_display_set_flush_cb(disp, flush_display_cb);
@@ -69,9 +76,8 @@ int Display::init()
 							   LV_DISPLAY_RENDER_MODE_PARTIAL);
 	}
 
-	ESP_LOGI(DISPLAY_TAG, "Display initialized");
-
-	return 0;
+	ESP_LOGI(TAG, "Display initialized");
+	return ESP_OK;
 }
 
 void Display::render()
@@ -87,4 +93,14 @@ void Display::disable()
 void Display::enable()
 {
     digitalWrite(GFX_BL, HIGH);
+}
+
+void Display::select()
+{
+    digitalWrite(SS_TFT, LOW);
+}
+
+void Display::deselect()
+{
+    digitalWrite(SS_TFT, LOW);
 }

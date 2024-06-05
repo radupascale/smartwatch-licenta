@@ -1,4 +1,5 @@
 #pragma once
+#include "esp_err.h"
 
 class Component
 {
@@ -10,7 +11,7 @@ class Component
 	/**
 	 * @brief Initialize component
 	 *
-	 * @return 0 if the component was properly initialized, -1 on failure
+	 * @return ESP_OK on success
 	 */
-	virtual int init() = 0;
+	virtual esp_err_t init() = 0;
 };

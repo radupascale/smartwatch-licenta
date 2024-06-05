@@ -45,8 +45,10 @@ class Display : Component
 		instance->flush_display(disp, area, px_map);
 	}
 	void render();
-    int init() override;
+    esp_err_t init() override;
 
     void disable();
     void enable();
+    void select();
+    void deselect();
 };
