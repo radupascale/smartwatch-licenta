@@ -1,56 +1,78 @@
-#include "sd.h"
-
-#include "SdFat.h"
+#include "components/sd.h"
+#include "configs/core.h"
 #include "esp_log.h"
-#include <SPI.h>
 
-SdFs sd;
-FsFile file;
 static char const *TAG = "SD";
 
-int sd_init()
+SD::SD()
 {
-    ESP_LOGW(TAG, "Not implemented.");
+}
 
-	/* TODO: init SD */
+SD::~SD()
+{
+}
 
-	// uint32_t size, sizeMB;
-	// /* Disable display before setup */
-	// pinMode(TFT_SS, OUTPUT);
-	// digitalWrite(TFT_SS, HIGH);
+esp_err_t SD::init()
+{
 
-	// if (!sd.begin(SD_SS, SPI_SPEED)) {
-	// 	if (sd.card()->errorCode()) {
-	// 		ESP_LOGE(TAG, "SD initialization failed.");
-	// 		return -1;
-	// 	}
-	// 	if (sd.vol()->fatType() == 0) {
-	// 		ESP_LOGE(TAG, "Can't find a valid FAT16/FAT32 partition.");
-	// 		return -1;
-	// 	}
-	// 	ESP_LOGE(TAG, "Can't determine error type");
-	// 	return -1;
-	// }
-	// ESP_LOGI(TAG, "Card successfully initialized.");
+#ifdef SS_SD
+	pinMode(SS_SD, OUTPUT);
+#endif
 
-	// /* Print card info before returning  */
-	// size = sd.card()->sectorCount();
+	SPI.begin(SCK, MISO, MOSI, SS_SD);
+	if (!sd.begin(SS_SD)) {
+		if (sd.card()->errorCode()) {
+			ESP_LOGE(TAG, "SD initialization failed.\n");
+			return ESP_FAIL;
+		}
+	}
 
-	// if (size == 0) {
-	// 	ESP_LOGE(TAG, "Can't determine the card size.");
-	// 	return -1;
-	// }
-	// sizeMB = 0.000512 * size + 0.5;
-	// ESP_LOGI(TAG, "Card size: %d MB.", sizeMB);
-	// ESP_LOGI(TAG, "Volume is FAT%d.", int(sd.vol()->fatType()));
-	// ESP_LOGI(TAG, "Files found: ");
-	// sd.ls(LS_R | LS_DATE | LS_SIZE);
-	// /* TODO: Rest of initialization code */
+	ESP_LOGI(TAG, "Card successfully initialized.");
+	return ESP_OK;
+}
 
-	// /* Reenable the display as the main slave */
-	// pinMode(SD_SS, OUTPUT);
-	// digitalWrite(SD_SS, HIGH);
-	// digitalWrite(TFT_SS, LOW);
+esp_err_t SD::open_file(char *filename, int mode)
+{
+	if (opened) {
+		ESP_LOGE(TAG, "Another file is already opened");
+		return ESP_FAIL;
+	}
 
-	return 0;
+	file = sd.open(filename, mode);
+	opened = 1;
+	return ESP_OK;
+}
+
+esp_err_t SD::close_file()
+{
+	if (!opened) {
+		ESP_LOGE(TAG, "No file to close");
+		return ESP_FAIL;
+	}
+
+	file.close();
+	opened = 0;
+	return ESP_OK;
+}
+
+int SD::write_line(const char *buff)
+{
+	return file.println(buff);
+}
+
+String SD::read_line()
+{
+	String buff = file.readStringUntil('\n');
+
+	return buff;
+}
+
+void SD::select()
+{
+	digitalWrite(SS_SD, LOW);
+}
+
+void SD::deselect()
+{
+	digitalWrite(SS_SD, HIGH);
 }
