@@ -8,10 +8,12 @@
 #include "components/drv.h"
 #include "components/display.h"
 #include "components/sd.h"
+#include "components/norFlash.h"
 static DRV *drv;
 static IMU *imu;
 static Display *display;
 static SD *sd;
+static NORFlash *flash;
 
 void setUp(void)
 {
@@ -19,6 +21,7 @@ void setUp(void)
     imu = new IMU();
     display = new Display();
     sd = new SD();
+    flash = new NORFlash();
 }
 
 void tearDown(void)
@@ -93,6 +96,18 @@ void test_sd_read_write(void)
     TEST_ASSERT_EQUAL(ESP_OK, sd->close_file());
 }
 
+void test_flash_read_write_byte(void)
+{
+	uint32_t addr = 0;
+	uint8_t data = 0x69;
+	uint8_t read_data = 0x00;
+	TEST_ASSERT_EQUAL(ESP_OK, flash->init());
+	TEST_ASSERT_EQUAL(ESP_OK, flash->page_program(addr, &data, 1));
+    flash->read_data(addr, &read_data, 1);
+
+    TEST_ASSERT_EQUAL(data, read_data);
+}
+
 /******************* FUNCTIONS FOR RUNNING TESTS *****************/
 
 void run_unity_tests_imu(void)
@@ -115,6 +130,11 @@ void run_unity_tests_sd(void)
     RUN_TEST(test_sd_read_write);
 }
 
+void run_unity_tests_flash(void)
+{
+    RUN_TEST(test_flash_read_write_byte);
+}
+
 int run_tests(void)
 {
     UNITY_BEGIN();
@@ -122,6 +142,7 @@ int run_tests(void)
     run_unity_tests_imu();
     run_unity_tests_display();
     run_unity_tests_sd();
+    run_unity_tests_flash();
     return UNITY_END();
 }
 
