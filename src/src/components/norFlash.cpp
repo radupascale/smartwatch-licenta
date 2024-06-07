@@ -56,52 +56,47 @@ void NORFlash::deselect(void)
 	gpio_set_level(SS_FLASH, 1);
 }
 
-void NORFlash::send_instr(flash_instr_t instr)
-{
-	SPI.beginTransaction(*busSettings);
-	select();
-	SPI.transfer(instr);
-	deselect();
-	SPI.endTransaction();
-}
-
 void NORFlash::chip_reset()
 {
-	send_instr(RST_EN);
-	send_instr(RST);
+    SPI.beginTransaction(*busSettings);
+    send_instr(RST_EN);
+    send_instr(RST);
+    SPI.endTransaction();
 }
 
 void NORFlash::wait_busy()
 {
-	uint8_t sr;
+	uint8_t sr = 0x00;
 
 	read_status_register(READ_SRG1, &sr);
 	while (sr & (1 << BUSY_BIT)) {
+        ESP_LOGI(TAG, "Waiting for busy bit to clear...");
 		read_status_register(READ_SRG1, &sr);
 	}
 }
 
-void NORFlash::write_enable()
+void NORFlash::send_instr(uint8_t instr)
 {
     select();
-	send_instr(WR_ENABLE);
+    SPI.transfer(instr);
     deselect();
 }
-void NORFlash::read_status_register(flash_instr_t instr, uint8_t *data)
+
+void NORFlash::read_status_register(uint8_t instr, uint8_t *data)
 {
-	SPI.beginTransaction(*busSettings);
 	select();
-	send_instr(READ_SRG1);
+	SPI.transfer(READ_SRG1);
 	*data = SPI.transfer(DUMMY_VAL);
 	deselect();
-	SPI.endTransaction();
 }
 
 void NORFlash::chip_erase()
 {
-	write_enable();
-	send_instr(CHIP_ERASE);
+	SPI.beginTransaction(*busSettings);
+    send_instr(WR_ENABLE);
+    send_instr(CHIP_ERASE);
 	wait_busy();
+    SPI.endTransaction();
 }
 
 void NORFlash::read_data(uint32_t addr, uint8_t *buff, size_t size)
@@ -134,9 +129,7 @@ esp_err_t NORFlash::page_program(uint32_t addr, uint8_t *data, size_t size)
 		return ESP_ERR_INVALID_SIZE;
 
 	SPI.beginTransaction(*busSettings);
-	select();
-	SPI.transfer(WR_ENABLE);
-	deselect();
+    send_instr(WR_ENABLE);
     select();
 	SPI.transfer(PAGE_PROGRAM);
 	SPI.transfer((addr >> 16) & MASK);

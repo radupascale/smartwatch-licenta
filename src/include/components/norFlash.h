@@ -12,17 +12,14 @@
  *
  */
 
-#define flash_instr_t uint8_t
 #define READ_SRG1 (0x05)
 #define WR_ENABLE (0x06) // set before any PAGE_PROGRAM, ERASE, or WRITE to SR
-#define WR_DISABLE                                                             \
-	(0x04) // automatically set after above (PAGE_PROGRAM, ERASE, WRITE to SR)
 #define READ_DATA (0x03)
 #define PAGE_PROGRAM (0x02) // write data?
 #define SECTOR_ERASE (0x20) // sector = 4KB
 #define BLOCK_ERASE_32KB (0x52)
 #define BLOCK_ERASE_64KB (0x52)
-#define CHIP_ERASE (0x60)
+#define CHIP_ERASE (0x07)
 #define RST_EN (0x66)
 #define RST (0x99)
 
@@ -50,27 +47,23 @@ class NORFlash : Component
 	esp_err_t configure_ss_pin(void);
 	void select(void);
 	void deselect(void);
-
-	void send_instr(flash_instr_t instr);
-
+	void send_instr(uint8_t instr);
 	/* SPI operations for W25Q256 module */
-
 	void chip_reset();
-	void read_status_register(flash_instr_t instr, uint8_t *data);
+	void read_status_register(uint8_t instr, uint8_t *data);
 	/**
 	 * @brief BUSY bit has to be low before any transactions
 	 *
 	 */
 	void wait_busy();
-	void write_enable();
 	void read_data(uint32_t addr, uint8_t *buff, size_t size);
 	/**
 	 * @brief Implements the page_program instruction from the datasheet
 	 * write_enable -> send_address -> send_data -> end
 	 * NOTE: If an entire 256 byte page is to be programmed, the last address
 	 * byte (the 8 least significant address bits) should be set to 0.
-     * This is why this function returns an error if the given size
-     * would overwrite data from the current page
+	 * This is why this function returns an error if the given size
+	 * would overwrite data from the current page
 	 * @param addr
 	 * @param data
 	 * @param size
