@@ -9,11 +9,13 @@
 #include "components/display.h"
 #include "components/sd.h"
 #include "components/norFlash.h"
+#include "components/battery.h"
 static DRV *drv;
 static IMU *imu;
 static Display *display;
 static SD *sd;
 static NORFlash *flash;
+static Battery *battery;
 
 void setUp(void)
 {
@@ -22,6 +24,7 @@ void setUp(void)
     display = new Display();
     sd = new SD();
     flash = new NORFlash();
+    battery = new Battery();
 }
 
 void tearDown(void)
@@ -108,6 +111,16 @@ void test_flash_read_write_byte(void)
     TEST_ASSERT_EQUAL(data, read_data);
 }
 
+void test_battery_read_voltage(void)
+{
+    uint32_t min_voltage = 3200;
+    uint32_t max_voltage = 4200;
+    uint32_t voltage = battery->read_adc();
+    
+    TEST_ASSERT_GREATER_THAN(min_voltage, voltage);
+    TEST_ASSERT_GREATER_THAN(max_voltage, voltage);
+}
+
 /******************* FUNCTIONS FOR RUNNING TESTS *****************/
 
 void run_unity_tests_imu(void)
@@ -135,6 +148,11 @@ void run_unity_tests_flash(void)
     RUN_TEST(test_flash_read_write_byte);
 }
 
+void run_unity_tests_battery(void)
+{
+    RUN_TEST(test_battery_read_voltage);
+}
+
 int run_tests(void)
 {
     UNITY_BEGIN();
@@ -143,6 +161,7 @@ int run_tests(void)
     run_unity_tests_display();
     run_unity_tests_sd();
     run_unity_tests_flash();
+    run_unity_tests_battery();
     return UNITY_END();
 }
 
