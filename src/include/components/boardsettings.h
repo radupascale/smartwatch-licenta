@@ -35,14 +35,9 @@ class BoardSettings
   public:
 	static BoardSettings *instance;
 
-	BoardSettings()
-	{
-        if (this->instance != nullptr)
-        {
-            return;
-        }
-        this->instance = this; 
-	}
+	BoardSettings();
+
+    void init(void);
 
     static void event_handler_static(void *arg, esp_event_base_t event_base,
                                         int32_t event_id, void *event_data)
@@ -78,6 +73,7 @@ class BoardSettings
      * 
      */
     void clock_init(void);
+    void set_timezone(void);
 
     /**
      * @brief Stops the sntp server
@@ -85,8 +81,10 @@ class BoardSettings
      */
     void clock_deinit(void);
 
+    void configure_deep_sleep_wakeup_source(void);
     void deep_sleep(void);
 
+    void init_nvs_flash(void);
     void init_pedometer_nvs_flash(void);
 
     /**
@@ -109,4 +107,7 @@ class BoardSettings
      * @return void* 
      */
     void* read_from_nvs(const char *key, uint32_t size, const char *partition);
+
+    bool get_sntp_status(void);
+    int get_boot_count(void);
 };

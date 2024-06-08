@@ -107,10 +107,9 @@ void DeviceManager::handle_button_event(AceButton *, uint8_t eventType,
 	 * in which case we turn off the display's backlight.
 	 */
 	case AceButton::kEventLongPressed:
-		display->disable();
+        settings->deep_sleep();
 		break;
 	case AceButton::kEventDoubleClicked:
-		display->enable();
 		break;
 	default:
 		break;

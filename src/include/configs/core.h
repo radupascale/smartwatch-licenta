@@ -7,6 +7,7 @@
 #define BUTTON_SELECT GPIO_NUM_0
 #define BUTTON_UP GPIO_NUM_11
 #define BUTTON_DOWN GPIO_NUM_26
+#define RTC_GPIO0 BUTTON_UP
 
 #define MISO 37
 #define SCK 36

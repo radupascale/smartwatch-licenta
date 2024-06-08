@@ -16,8 +16,62 @@
 
 #include "esp_sntp.h"
 
-static const char *SETTINGS_TAG = "SETTINGS";
+static const char *TAG = "SETTINGS";
 BoardSettings *BoardSettings::instance = nullptr;
+RTC_DATA_ATTR static int boot_count = 0;
+
+void BoardSettings::init(void)
+{
+    esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
+
+    init_nvs_flash();
+	init_pedometer_nvs_flash();
+    /** 
+     * Configure wifi and SNTP only after a hard reboot
+     */
+    if (!(wakeup_cause == ESP_SLEEP_WAKEUP_EXT0))
+    {
+        wifi_init();
+        clock_init();
+    }
+    else
+    {
+        boot_count++;
+        set_timezone();
+    }
+}
+
+void BoardSettings::init_nvs_flash(void)
+{
+	esp_err_t ret;
+	/* TODO: Use NVS for persistent wifi configs */
+	ret = nvs_flash_init();
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+		ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+		ESP_ERROR_CHECK(nvs_flash_erase());
+		ret = nvs_flash_init();
+	}
+	ESP_ERROR_CHECK(ret);
+}
+
+bool BoardSettings::get_sntp_status(void)
+{
+    return sntp_enabled();
+}
+
+int BoardSettings::get_boot_count(void)
+{
+    return boot_count;
+}
+
+BoardSettings::BoardSettings()
+{
+    if (this->instance != nullptr)
+    {
+        return;
+    }
+    this->instance = this; 
+}
 
 void BoardSettings::event_handler(void *arg, esp_event_base_t event_base,
 								  int32_t event_id, void *event_data)
@@ -29,14 +83,14 @@ void BoardSettings::event_handler(void *arg, esp_event_base_t event_base,
 		if (s_retry_num < MAXIMUM_RETRY) {
 			esp_wifi_connect();
 			s_retry_num++;
-			ESP_LOGI(SETTINGS_TAG, "retry to connect to the AP");
+			ESP_LOGI(TAG, "retry to connect to the AP");
 		} else {
 			xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
 		}
-		ESP_LOGI(SETTINGS_TAG, "connect to the AP fail");
+		ESP_LOGI(TAG, "connect to the AP fail");
 	} else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
 		ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-		ESP_LOGI(SETTINGS_TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+		ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
 		s_retry_num = 0;
 		xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
 	}
@@ -45,7 +99,7 @@ void BoardSettings::event_handler(void *arg, esp_event_base_t event_base,
 void BoardSettings::wifi_init(void)
 {
 
-	ESP_LOGI(SETTINGS_TAG, "Initializing wifi.");
+	ESP_LOGI(TAG, "Initializing wifi.");
 
 	s_wifi_event_group = xEventGroupCreate();
 
@@ -80,7 +134,7 @@ void BoardSettings::wifi_init(void)
 	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
 	ESP_ERROR_CHECK(esp_wifi_start());
 
-	ESP_LOGI(SETTINGS_TAG, "wifi_init_sta finished.");
+	ESP_LOGI(TAG, "wifi_init_sta finished.");
 
 	/* Waiting until either the connection is established (WIFI_CONNECTED_BIT)
 	 * or connection failed for the maximum number of re-tries (WIFI_FAIL_BIT).
@@ -92,13 +146,13 @@ void BoardSettings::wifi_init(void)
 	/* xEventGroupWaitBits() returns the bits before the call returned, hence we
 	 * can test which event actually happened. */
 	if (bits & WIFI_CONNECTED_BIT) {
-		ESP_LOGI(SETTINGS_TAG, "connected to ap SSID:%s password:%s", MY_SSID,
+		ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", MY_SSID,
 				 MY_PASS);
 	} else if (bits & WIFI_FAIL_BIT) {
-		ESP_LOGI(SETTINGS_TAG, "Failed to connect to SSID:%s, password:%s",
+		ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
 				 wifi_config.sta.ssid, wifi_config.sta.password);
 	} else {
-		ESP_LOGE(SETTINGS_TAG, "UNEXPECTED EVENT");
+		ESP_LOGE(TAG, "UNEXPECTED EVENT");
 	}
 }
 
@@ -112,10 +166,16 @@ void BoardSettings::wifi_start(void)
 	esp_wifi_start();
 }
 
+void BoardSettings::configure_deep_sleep_wakeup_source(void)
+{
+    ESP_ERROR_CHECK(esp_sleep_enable_ext0_wakeup(RTC_GPIO0, 0));
+}
+
 void BoardSettings::deep_sleep(void)
 {
+    configure_deep_sleep_wakeup_source();
 	wifi_stop();
-	ESP_LOGI(SETTINGS_TAG, "Entering deep sleep");
+	ESP_LOGI(TAG, "Entering deep sleep");
 	esp_deep_sleep_start();
 }
 
@@ -128,9 +188,13 @@ void BoardSettings::clock_init(void)
 	sntp_init();
 	sntp_sync_time(&tv);
 
+    set_timezone();
+}
+
+void BoardSettings::set_timezone(void)
+{
 	/* Set timezone to romania */
 	setenv("TZ", "EET-2EEST,M3.5.0/3,M10.5.0/4", 1);
-	tzset();
 }
 
 void BoardSettings::clock_deinit(void)
@@ -147,9 +211,9 @@ void BoardSettings::init_pedometer_nvs_flash(void)
 		ESP_ERROR_CHECK(nvs_flash_erase_partition(NVS_PEDOMETER_PART));
 		ret = nvs_flash_init_partition(NVS_PEDOMETER_PART);
 		ESP_ERROR_CHECK(ret);
-		ESP_LOGI(SETTINGS_TAG, "Return value: %s", esp_err_to_name(ret));
+		ESP_LOGI(TAG, "Return value: %s", esp_err_to_name(ret));
 	}
-	ESP_LOGI(SETTINGS_TAG, "NVS partition %s initialized", NVS_PEDOMETER_PART);
+	ESP_LOGI(TAG, "NVS partition %s initialized", NVS_PEDOMETER_PART);
 }
 
 esp_err_t BoardSettings::write_to_nvs(const char *key, void *value,
@@ -161,7 +225,7 @@ esp_err_t BoardSettings::write_to_nvs(const char *key, void *value,
 	err = nvs_open_from_partition(partition, DEFAULT_NAMESPACE, NVS_READWRITE,
 								  &handler);
 	if (err != ESP_OK) {
-		ESP_LOGE(SETTINGS_TAG, "Error (%s) opening NVS handle",
+		ESP_LOGE(TAG, "Error (%s) opening NVS handle",
 				 esp_err_to_name(err));
 		return err;
 	}
@@ -169,21 +233,21 @@ esp_err_t BoardSettings::write_to_nvs(const char *key, void *value,
 	/* This will overwrite the value at the nvs location if it exists */
 	err = nvs_set_blob(handler, key, value, size);
 	if (err != ESP_OK) {
-		ESP_LOGE(SETTINGS_TAG, "Error (%s) writing to NVS",
+		ESP_LOGE(TAG, "Error (%s) writing to NVS",
 				 esp_err_to_name(err));
 		goto exit;
 	}
 
 	err = nvs_commit(handler);
 	if (err != ESP_OK) {
-		ESP_LOGE(SETTINGS_TAG, "Error (%s) flashing to NVS",
+		ESP_LOGE(TAG, "Error (%s) flashing to NVS",
 				 esp_err_to_name(err));
 	}
 
 exit:
 	nvs_close(handler);
 
-    ESP_LOGI(SETTINGS_TAG, "Finish writing to NVS");
+    ESP_LOGI(TAG, "Finish writing to NVS");
 	return err;
 }
 
@@ -198,25 +262,25 @@ void *BoardSettings::read_from_nvs(const char *key, uint32_t size,
 	err = nvs_open_from_partition(partition, DEFAULT_NAMESPACE, NVS_READWRITE,
 								  &handler);
 	if (err != ESP_OK) {
-		ESP_LOGE(SETTINGS_TAG, "Error (%s) opening NVS handle",
+		ESP_LOGE(TAG, "Error (%s) opening NVS handle",
 				 esp_err_to_name(err));
 	}
 
 	err = nvs_get_blob(handler, key, NULL, &len);
 	if (err != ESP_OK) {
-		ESP_LOGE(SETTINGS_TAG, "Error (%s) reading from NVS handle",
+		ESP_LOGE(TAG, "Error (%s) reading from NVS handle",
 				 esp_err_to_name(err));
 		goto exit;
 	}
 
 	if (len == 0) {
-		ESP_LOGI(SETTINGS_TAG, "No value set at key %s in NVS partition %s",
+		ESP_LOGI(TAG, "No value set at key %s in NVS partition %s",
 				 key, partition);
 	} else {
 		value = malloc(len);
 		err = nvs_get_blob(handler, key, value, &len);
 		if (err != ESP_OK) {
-			ESP_LOGE(SETTINGS_TAG, "Error (%s) reading from NVS handle",
+			ESP_LOGE(TAG, "Error (%s) reading from NVS handle",
 					 esp_err_to_name(err));
 			free(value);
 		}
@@ -224,6 +288,6 @@ void *BoardSettings::read_from_nvs(const char *key, uint32_t size,
 
 exit:
 	nvs_close(handler);
-    ESP_LOGI(SETTINGS_TAG, "Finish reading from NVS");
+    ESP_LOGI(TAG, "Finish reading from NVS");
 	return value;
 }
