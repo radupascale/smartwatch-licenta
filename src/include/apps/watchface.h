@@ -6,6 +6,7 @@ class WatchFace : App
 {
   private:
     Pedometer *pedometer = nullptr;
+    Battery *battery = nullptr;
 
     lv_style_t symbol_style;
 
@@ -27,6 +28,7 @@ class WatchFace : App
   public:
 	WatchFace(DeviceManager *deviceManager, BoardSettings *settings) : App(deviceManager, settings)
 	{
+        battery = deviceManager->get_battery();
 	}
 
     void attach_pedometer(Pedometer *pedometer);

@@ -78,18 +78,9 @@ void WatchFace::setup_ui()
     lv_style_set_text_font(&battery_style, &lv_font_montserrat_20);
     lv_style_set_text_color(&battery_style, lv_color_make(0xFF, 0xFF, 0xFF));
     battery_label = lv_label_create(lv_scr_act());
-    lv_label_set_text(battery_label, LV_SYMBOL_BATTERY_1);
+    lv_label_set_text(battery_label, "%0 4000mV");
     lv_obj_add_style(battery_label, &battery_style, 0);
-    lv_obj_align(battery_label, LV_ALIGN_TOP_MID, -20, 20);
-
-    lv_style_init(&wifi_style);
-    lv_style_set_text_font(&wifi_style, &lv_font_montserrat_20);
-    lv_style_set_text_color(&wifi_style, lv_color_make(0xFF, 0xFF, 0xFF));
-    wifi_label = lv_label_create(lv_scr_act());
-    lv_label_set_text(wifi_label, LV_SYMBOL_WIFI);
-    lv_obj_add_style(wifi_label, &wifi_style, 0);
-    lv_obj_align_to(wifi_label, battery_label, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-
+    lv_obj_align(battery_label, LV_ALIGN_TOP_MID, 0, 30);
 }
 
 void WatchFace::update_ui()
@@ -106,6 +97,11 @@ void WatchFace::update_ui()
 	/* Update step count if the pedometer is attached */
 	if (pedometer != NULL) {
 		lv_label_set_text_fmt(steps_label, "%d", pedometer->get_steps());
+	}
+
+    if (battery != NULL)
+    {
+        lv_label_set_text_fmt(battery_label, "%hhu%%%umV", battery->get_battery_level(), battery->read_adc());
 	}
 }
 

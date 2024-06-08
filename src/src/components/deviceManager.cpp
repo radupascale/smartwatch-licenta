@@ -55,6 +55,9 @@ void DeviceManager::init(BoardSettings *settings)
     if (status < 0) {
         ESP_LOGE(DEVTAG, "Failed to initialize DRV.");
     }
+
+    battery = new Battery();
+    battery->init_adc();
 }
 
 DeviceManager *DeviceManager::get_instance()
@@ -75,6 +78,11 @@ IMU *DeviceManager::get_imu()
 DRV *DeviceManager::get_drv()
 {
     return this->drv;
+}
+
+Battery *DeviceManager::get_battery()
+{
+    return this->battery;
 }
 
 void DeviceManager::handle_button_event_static(AceButton *, uint8_t eventType,
