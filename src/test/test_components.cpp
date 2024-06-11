@@ -115,10 +115,11 @@ void test_battery_read_voltage(void)
 {
     uint32_t min_voltage = 3200;
     uint32_t max_voltage = 4200;
+    battery->init_adc();
     uint32_t voltage = battery->read_adc();
     
     TEST_ASSERT_GREATER_THAN(min_voltage, voltage);
-    TEST_ASSERT_GREATER_THAN(max_voltage, voltage);
+    TEST_ASSERT_LESS_THAN(max_voltage, voltage);
 }
 
 /******************* FUNCTIONS FOR RUNNING TESTS *****************/
