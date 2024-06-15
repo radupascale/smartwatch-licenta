@@ -35,6 +35,12 @@ class DRV : Component
      * @param effect index of effect in the current library (default is 1)
      */
 	void play(int effect);
+
+    /**
+     * @brief Polls the GO bit until it is 0 (effect finished)
+     * 
+     */
+    void wait_effect();
     void enable();
     void disable();
     esp_err_t configure_enable_pin();

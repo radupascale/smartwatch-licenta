@@ -39,13 +39,10 @@ void test_play(void)
 
 	TEST_ASSERT_EQUAL(ESP_OK, drv->init());
 
-	drv->enable();
 	while (count) {
 		drv->play(effect);
 		count--;
-		delay(1000);
 	}
-	drv->disable();
 }
 
 void test_read_accel_no_movement(void)

@@ -6,16 +6,15 @@ static char const *TAG = "DRV2605";
 
 esp_err_t DRV::init()
 {
-    esp_err_t err = ESP_OK;
+	esp_err_t err = ESP_OK;
 
 	/* Set the ENABLE GPIO pin as output and the drv to LOW */
-    err = configure_enable_pin();
-	if(err != ESP_OK)
-    {
+	err = configure_enable_pin();
+	if (err != ESP_OK) {
 		ESP_LOGE(TAG, "Failed to initialize motor driver.");
 		return err;
-    }
-    
+	}
+
 	enable();
 
 	if (!drv->begin(&Wire)) {
@@ -38,10 +37,13 @@ esp_err_t DRV::init()
 void DRV::play(int effect)
 {
 	ESP_LOGI(TAG, "Playing effect %d", effect);
+
+	enable();
 	drv->setWaveform(0, effect);
 	drv->setWaveform(1, 0);
-
 	drv->go();
+	wait_effect();
+	disable();
 }
 
 esp_err_t DRV::configure_enable_pin()
@@ -71,6 +73,13 @@ void DRV::enable()
 void DRV::disable()
 {
 	gpio_set_level(EN_DRV, LOW);
+}
+
+void DRV::wait_effect()
+{
+	while (drv->readRegister8(DRV2605_REG_GO) & 0x01) {
+		;
+	}
 }
 
 DRV::DRV()
