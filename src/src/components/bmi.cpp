@@ -21,24 +21,28 @@ esp_err_t IMU::init()
 {
 	esp_err_t err = ESP_OK;
 
+#if USE_ACCEL
 	if (accel->begin() < 0) {
 		ESP_LOGE(BMI_TAG, "Failed to initalize accelerometer.");
 		return ESP_FAIL;
 	}
 	ESP_LOGI(BMI_TAG, "Accelerometer initialized.");
+#endif
 
+#if USE_GYRO
 	if (gyro->begin() < 0) {
 		ESP_LOGE(BMI_TAG, "Failed to initalize gyroscope.");
 		return ESP_FAIL;
 	}
 	ESP_LOGI(BMI_TAG, "Gyroscope initialized.");
+#endif
 
 	/* TODO: Configure interrupts and ODR */
 
     /** Accelerometer is used only for step counting => set a lower sampling rate
      * (25Hz with a 3Hz low pass)
      */
-    // accel->setOdr(accel->ODR_25HZ_BW_3HZ);
+    accel->setOdr(accel->ODR_100HZ_BW_10HZ);
 
 	return err;
 }

@@ -5,6 +5,9 @@
 #define I2C_ACCEL 0x18
 #define I2C_GYRO 0x68
 
+#define USE_ACCEL 1
+#define USE_GYRO 0
+
 struct IMUData
 {
     float x;
