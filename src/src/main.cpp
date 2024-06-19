@@ -1,3 +1,4 @@
+#include "apps/gui.h"
 #include "apps/pedometer.h"
 #include "apps/watchface.h"
 #include "components/boardsettings.h"
@@ -9,6 +10,8 @@
 #include "esp_log.h"
 #include "esp_system.h"
 
+#include "esp32/clk.h"
+#include "esp_task_wdt.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
@@ -21,6 +24,13 @@ static DeviceManager *deviceManager = nullptr;
 static BoardSettings *settings = nullptr;
 static WatchFace *watch_face = nullptr;
 static Pedometer *pedometer = nullptr;
+
+TaskHandle_t gui_task;
+TaskHandle_t display_task;
+TaskHandle_t resumer_task;
+TaskHandle_t button_task;
+static SemaphoreHandle_t lvgl_mutex;
+static GUI *gui = nullptr;
 
 void wait_for_sntp()
 {
@@ -47,6 +57,14 @@ void wait_for_sntp()
 
 void os_init()
 {
+	/* Initialize LVGL mutex */
+	lvgl_mutex = xSemaphoreCreateBinary();
+	if (lvgl_mutex != NULL) {
+		ESP_LOGI(MAIN_TAG, "LVGL Mutex created");
+		xSemaphoreGive(lvgl_mutex);
+	}
+
+	/* TODO: call it board */
 	settings = new BoardSettings();
 	settings->init();
 
@@ -55,20 +73,68 @@ void os_init()
 
 	/* Initialize applications */
 	wait_for_sntp();
-	pedometer = new Pedometer(deviceManager, settings);
-	watch_face = new WatchFace(deviceManager, settings);
+	/* TODO: why do these also get settings as an argument?  */
+	pedometer = new Pedometer(deviceManager, "Pedometer");
+	watch_face = new WatchFace(deviceManager, "Watchface");
 	watch_face->attach_pedometer(pedometer);
-	watch_face->setup_ui();
 
-	ESP_LOGI(MAIN_TAG, "Finish modules initialization. Boot count: %d", settings->get_boot_count());
+	/* TODO: init gui */
+	gui = new GUI();
+	gui->init(watch_face);
+	/* TODO: add applications */
+	// gui->add_app(watch_face);
+	// gui->add_app(pedometer);
+	// gui->add_app(settings);
+
+	ESP_LOGI(MAIN_TAG, "Finish modules initialization. Boot count: %d",
+			 settings->get_boot_count());
 }
 
 void os_update_display(void *pvParameter)
 {
+	Display *display = deviceManager->get_display();
+	uint32_t ulNotifiedValue = 0x00;
+
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(200));
-		watch_face->update_ui();
-		deviceManager->get_display()->render();
+        xTaskNotifyWait(0, 0, &ulNotifiedValue, pdMS_TO_TICKS(200));
+
+        if (ulNotifiedValue & PAUSE_TASK)
+        {
+            ESP_LOGI(MAIN_TAG, "Pause Update display");
+            display->disable();
+            
+            /* Note: the event it is waiting for is RESUME_TASK */
+            xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
+            display->enable();
+            ESP_LOGI(MAIN_TAG, "Resume update display");
+        }
+		/**
+		 * LVGL is not thread safe, use this to guard display update
+		 * operations, see this: https://docs.lvgl.io/8.3/porting/os.html
+		 */
+		xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+		gui->get_current_app()->update_ui();
+		display->render();
+		xSemaphoreGive(lvgl_mutex);
+	}
+}
+
+void os_gui(void *pvParameter)
+{
+	uint32_t ulNotifiedValue = 0x00;
+	/**
+	 * This is needed to avoid KERNEL PANIC
+	 * caused by the IDLE task failing to reset the WDT
+	 */
+	esp_task_wdt_init(TWDT_TIMEOUT_MS, true);
+
+	while (1) {
+		xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
+
+		// lock mutex
+		xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+		gui->handle_event(ulNotifiedValue);
+		xSemaphoreGive(lvgl_mutex);
 	}
 }
 
@@ -100,10 +166,41 @@ void os_pedometer(void *pvParameter)
  */
 void os_check_buttons(void *pvParameter)
 {
+    uint32_t ulNotifiedValue;
+        
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(5));
+        xTaskNotifyWait(0, 0, &ulNotifiedValue, pdMS_TO_TICKS(5));
+
+        if (ulNotifiedValue & PAUSE_TASK)
+        {
+            ESP_LOGI(MAIN_TAG, "Pausing button task");
+            /* Note: the event it is waiting for is RESUME_TASK */
+            xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
+            ESP_LOGI(MAIN_TAG, "Resuming button task");
+        }
 		deviceManager->check_buttons();
 	}
+}
+
+/**
+ * @brief Task who's sole purpose is to restart paused tasks
+ * after the BUTTON_SELECT interrupt triggers
+ * 
+ * @param pvParameter 
+ */
+void os_resumer(void *pvParameter)
+{
+    deviceManager->add_pausable_task(display_task);
+    deviceManager->add_pausable_task(button_task);
+    deviceManager->start_inactivity_timer();
+    while (1)
+    {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        ESP_LOGI(MAIN_TAG, "Resuming tasks");
+        deviceManager->resume_inactive_tasks();
+        deviceManager->reset_inactivity_timer();
+    }
+    
 }
 
 #ifndef UNIT_TEST
@@ -113,15 +210,18 @@ void app_main()
 	os_init();
 
 	xTaskCreatePinnedToCore(&os_update_display, "os_update_display", 8096, NULL,
-							5, NULL, APP_CPU_NUM);
-	xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
-							5, NULL, APP_CPU_NUM);
-	xTaskCreatePinnedToCore(&os_pedometer, "os_pedometer", 8096, NULL, 5, NULL,
+							5, &display_task, APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_gui, "os_gui", 8096, NULL, 6, &gui_task,
 							APP_CPU_NUM);
-#if TEST_IMU
-	xTaskCreatePinnedToCore(&os_toggle_imu, "os_toggle_imu", 8096, NULL, 5,
-							NULL, APP_CPU_NUM);
-#endif
+	deviceManager->set_gui_task(gui_task);
+
+	xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
+							5, &button_task, APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_pedometer, "os_pedometer", 8096, NULL, 5,
+	NULL, 						APP_CPU_NUM);
+    xTaskCreatePinnedToCore(&os_resumer, "os_resumer", 8096, NULL, 7, &resumer_task,
+                            APP_CPU_NUM);
+
 }
 };
 #endif

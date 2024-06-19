@@ -19,9 +19,11 @@
 
 #define SPI_SPEED (5000000UL)
 
-#define TEST_IMU 0
-
 #define NVS_PEDOMETER_PART "pedometer"
 #define DEFAULT_NAMESPACE "default"
 
-void os_init();
+#define TWDT_TIMEOUT_MS 3000
+
+void os_init(void *pvParam);
+void os_gui(void *pvParam);
+void os_resumer(void *pvParam);

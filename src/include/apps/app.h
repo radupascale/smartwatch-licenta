@@ -7,21 +7,18 @@ class App
   public:
 	DeviceManager *deviceManager;
 	BoardSettings *board;
-	App(DeviceManager *deviceManager)
+    String app_name;
+
+	App(DeviceManager *deviceManager, String app_name)
 	{
 		this->deviceManager = deviceManager;
+        this->app_name = app_name;
+
+        board = deviceManager->get_board();
 	}
 
-	/**
-	 * @brief Constructor used by apps which querry the internal state
-	 * of the board.
-	 */
-	App(DeviceManager *deviceManager, BoardSettings *board)
-	{
-		this->deviceManager = deviceManager;
-		this->board = board;
-	}
 
+    virtual void load_screen() = 0;
 	virtual void setup_ui() = 0;
 	virtual void update_ui() = 0;
 };

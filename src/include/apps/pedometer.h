@@ -4,18 +4,19 @@
 #include "apps/app.h"
 #include "components/bmi.h"
 
-class Pedometer : App
+class Pedometer : public App
 {
   private:
 	IMU *imu;
 	const char *key_format = "%02d%02d%02d";
 
   public:
-	Pedometer(DeviceManager *deviceManager, BoardSettings *board)
-		: App(deviceManager, board)
+	Pedometer(DeviceManager *deviceManager, String app_name)
+		: App(deviceManager, app_name)
 	{
 		imu = deviceManager->get_imu();
-		initAlgo();
+        if (imu != NULL)
+            initAlgo();
 
 		/* Try to read the step count from nvs */
 		read_todays_steps();
@@ -32,6 +33,12 @@ class Pedometer : App
 	void update_ui() override
 	{
 	}
+
+    void load_screen() override
+    {
+        
+    }
+
 	void reset_algorithm();
 	steps_t get_steps();
 	void set_steps(steps_t step_count);
