@@ -70,7 +70,6 @@ void NORFlash::wait_busy()
 
 	read_status_register(READ_SRG1, &sr);
 	while (sr & (1 << BUSY_BIT)) {
-        ESP_LOGI(TAG, "Waiting for busy bit to clear...");
 		read_status_register(READ_SRG1, &sr);
 	}
 }

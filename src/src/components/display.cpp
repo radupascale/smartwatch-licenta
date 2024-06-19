@@ -43,11 +43,6 @@ esp_err_t Display::init()
 	digitalWrite(GFX_BL, HIGH);
 #endif
 
-#ifdef SS_TFT
-    pinMode(SS_TFT, OUTPUT);
-    digitalWrite(SS_TFT, HIGH);
-#endif
-
 	lv_init();
 
 	/*Set a tick source so that LVGL will know how much time elapsed. */
