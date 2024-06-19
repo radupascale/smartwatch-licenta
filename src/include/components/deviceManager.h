@@ -14,6 +14,9 @@
 #include "components/ppg.h"
 #include "components/sd.h"
 
+#define USE_DISPLAY 1
+#define USE_IMU 1
+#define USE_DRV 0
 #define USE_SD 0
 #define USE_FLASH 0
 
@@ -72,6 +75,13 @@ class DeviceManager
 								  uint8_t buttonState);
 	void set_gui_task(TaskHandle_t task);
 
+    /**
+     * @brief Callback function for FreeRTOS software timer
+     * NOTE: don't use prints in this function or increase
+     * timer stack size if you don't want random STACK OVERFLOW errors
+     * 
+     * @param xTimer 
+     */
 	static void inactivity_timer_expired(TimerHandle_t xTimer);
 	void create_inactivity_timer(void);
 	void start_inactivity_timer();

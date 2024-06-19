@@ -4,6 +4,7 @@
 /* Singleton constructor */
 DeviceManager *DeviceManager::instance = nullptr;
 static char const *DEVTAG = "DEVICE_MANAGER";
+extern TaskHandle_t resumer_task; /* signaled from ISR and timer callback */
 
 DeviceManager::DeviceManager()
 {
@@ -15,12 +16,13 @@ DeviceManager::DeviceManager()
 
 void DeviceManager::inactivity_timer_expired(TimerHandle_t xTimer)
 {
-	ESP_LOGI(DEVTAG, "Timer expired");
+    // instance->pause_tasks();
+    // setCpuFrequencyMhz(20);
+    // ESP_LOGI(DEVTAG, "CPU Frequency: %d MHz", getCpuFrequencyMhz());
 
-	/* Pause all tasks in the list */
-    instance->pause_tasks(); /* Maybe this should signal the resumer task to pause? */
-
+    /* Signal the resumer to pause */
 	gpio_set_intr_type(BUTTON_SELECT, GPIO_INTR_LOW_LEVEL);
+    xTaskNotifyGive(resumer_task);
 }
 
 void DeviceManager::add_pausable_task(TaskHandle_t task)
@@ -86,7 +88,6 @@ void DeviceManager::reset_inactivity_timer()
  *
  * @param arg NULL
  */
-extern TaskHandle_t resumer_task;
 static void IRAM_ATTR inactivity_isr(void *arg)
 {
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -131,23 +132,29 @@ void DeviceManager::init(BoardSettings *settings)
     pausable_tasks = LinkedList<TaskHandle_t>();
 
 	/* TODO: Initialize every component */
+#if USE_DISPLAY
 	display = new Display();
 	status = display->init();
 	if (status < 0) {
 		ESP_LOGE(DEVTAG, "Failed to initialize display.");
 	}
+#endif
 
+#if USE_IMU
 	imu = new IMU();
 	status = imu->init();
 	if (status < 0) {
 		ESP_LOGE(DEVTAG, "Failed to initialize IMU.");
 	}
+#endif
 
+#if USE_DRV
 	drv = new DRV();
 	status = drv->init();
 	if (status < 0) {
 		ESP_LOGE(DEVTAG, "Failed to initialize DRV.");
 	}
+#endif
 
 #if USE_SD
 	sd = new SD();

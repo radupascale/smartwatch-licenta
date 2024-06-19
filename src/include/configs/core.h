@@ -23,6 +23,8 @@
 #define DEFAULT_NAMESPACE "default"
 
 #define TWDT_TIMEOUT_MS 3000
+#define DEFAULT_CPU_FREQ_MHZ 40
+#define INACTIVE_CPU_FREQ_MHZ 20
 
 void os_init(void *pvParam);
 void os_gui(void *pvParam);

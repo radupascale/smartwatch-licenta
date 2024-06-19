@@ -57,6 +57,8 @@ void wait_for_sntp()
 
 void os_init()
 {
+    setCpuFrequencyMhz(DEFAULT_CPU_FREQ_MHZ);
+
 	/* Initialize LVGL mutex */
 	lvgl_mutex = xSemaphoreCreateBinary();
 	if (lvgl_mutex != NULL) {
@@ -183,8 +185,9 @@ void os_check_buttons(void *pvParameter)
 }
 
 /**
- * @brief Task who's sole purpose is to restart paused tasks
- * after the BUTTON_SELECT interrupt triggers
+ * @brief Task who's sole purpose is to PAUSE / RESUME
+ * tasks which get suspended when the inactivity timer
+ * expires
  * 
  * @param pvParameter 
  */
@@ -193,12 +196,26 @@ void os_resumer(void *pvParameter)
     deviceManager->add_pausable_task(display_task);
     deviceManager->add_pausable_task(button_task);
     deviceManager->start_inactivity_timer();
+    
+    int pause = 1;
     while (1)
     {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        ESP_LOGI(MAIN_TAG, "Resuming tasks");
-        deviceManager->resume_inactive_tasks();
-        deviceManager->reset_inactivity_timer();
+        if (pause)
+        {
+            ESP_LOGI(MAIN_TAG, "Pausing tasks");
+            deviceManager->pause_tasks();
+            setCpuFrequencyMhz(INACTIVE_CPU_FREQ_MHZ);
+            pause = 0;
+        }
+        else
+        {
+            setCpuFrequencyMhz(DEFAULT_CPU_FREQ_MHZ);
+            deviceManager->resume_inactive_tasks();
+            ESP_LOGI(MAIN_TAG, "Resuming tasks");
+            deviceManager->reset_inactivity_timer();
+            pause = 1;
+        }
     }
     
 }
