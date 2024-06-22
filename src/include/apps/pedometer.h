@@ -39,6 +39,11 @@ class Pedometer : public App
         
     }
 
+    void handle_button_event(uint32_t event) override
+    {
+
+    }
+
 	void reset_algorithm();
 	steps_t get_steps();
 	void set_steps(steps_t step_count);

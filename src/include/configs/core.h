@@ -23,8 +23,17 @@
 #define DEFAULT_NAMESPACE "default"
 
 #define TWDT_TIMEOUT_MS 3000
-#define DEFAULT_CPU_FREQ_MHZ 40
+#define DEFAULT_CPU_FREQ_MHZ 80
+#define ANTENNA_CPU_FREQ_MHZ 80 // wifi and bluetooth only works at this freq
 #define INACTIVE_CPU_FREQ_MHZ 20
+
+/* App and GUI notifications */
+#define EVENT_NONE (0x00)
+#define EVENT_LONG_SELECT (0x01)
+#define EVENT_BACK (0x02)
+#define EVENT_UP (0x03)
+#define EVENT_DOWN (0x04)
+#define EVENT_SELECT (0x05)
 
 void os_init(void *pvParam);
 void os_gui(void *pvParam);

@@ -1,6 +1,7 @@
 #include "apps/gui.h"
 #include "apps/pedometer.h"
 #include "apps/watchface.h"
+#include "apps/settings_app.h"
 #include "components/boardsettings.h"
 
 #include "configs/core.h"
@@ -22,7 +23,8 @@ static char const *MAIN_TAG = "MAIN";
 
 static DeviceManager *deviceManager = nullptr;
 static BoardSettings *settings = nullptr;
-static WatchFace *watch_face = nullptr;
+static WatchFace *watchFace = nullptr;
+static Settings *settingsApp = nullptr;
 static Pedometer *pedometer = nullptr;
 
 TaskHandle_t gui_task;
@@ -77,16 +79,15 @@ void os_init()
 	wait_for_sntp();
 	/* TODO: why do these also get settings as an argument?  */
 	pedometer = new Pedometer(deviceManager, "Pedometer");
-	watch_face = new WatchFace(deviceManager, "Watchface");
-	watch_face->attach_pedometer(pedometer);
+	watchFace = new WatchFace(deviceManager, "Watchface");
+	watchFace->attach_pedometer(pedometer);
+    settingsApp = new Settings(deviceManager, "Settings");
 
 	/* TODO: init gui */
 	gui = new GUI();
-	gui->init(watch_face);
+	gui->init(watchFace);
 	/* TODO: add applications */
-	// gui->add_app(watch_face);
-	// gui->add_app(pedometer);
-	// gui->add_app(settings);
+	gui->add_app(settingsApp);
 
 	ESP_LOGI(MAIN_TAG, "Finish modules initialization. Boot count: %d",
 			 settings->get_boot_count());

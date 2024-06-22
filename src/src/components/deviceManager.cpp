@@ -232,13 +232,6 @@ void DeviceManager::handle_button_event_up(AceButton *, uint8_t eventType,
 										   uint8_t buttonState)
 {
     reset_inactivity_timer();
-	const __FlashStringHelper *flashStr = F(AceButton::eventName(eventType));
-	char buffer[100]; // Make sure the size is large enough for your string
-	strcpy_P(buffer, (PGM_P)flashStr);
-	// Print out a message for all events.
-	ESP_LOGI(DEVTAG, "handle event: %s", buffer);
-	ESP_LOGI(DEVTAG, "button state: %d", buttonState);
-
 	switch (eventType) {
 	case AceButton::kEventPressed:
 		xTaskNotify(gui_task, EVENT_UP, eSetBits);
@@ -259,17 +252,9 @@ void DeviceManager::handle_button_event_down(AceButton *, uint8_t eventType,
 											 uint8_t buttonState)
 {
     reset_inactivity_timer();
-	const __FlashStringHelper *flashStr = F(AceButton::eventName(eventType));
-	char buffer[100]; // Make sure the size is large enough for your string
-	strcpy_P(buffer, (PGM_P)flashStr);
-	// Print out a message for all events.
-	ESP_LOGI(DEVTAG, "handle event: %s", buffer);
-	ESP_LOGI(DEVTAG, "button state: %d", buttonState);
-
 	switch (eventType) {
 	case AceButton::kEventPressed:
 		xTaskNotify(gui_task, EVENT_DOWN, eSetBits);
-		settings->deep_sleep();
 		break;
 	default:
 		break;
@@ -287,16 +272,12 @@ void DeviceManager::handle_button_event_select(AceButton *, uint8_t eventType,
 											   uint8_t buttonState)
 {
     reset_inactivity_timer();
-	const __FlashStringHelper *flashStr = F(AceButton::eventName(eventType));
-	char buffer[100]; // Make sure the size is large enough for your string
-	strcpy_P(buffer, (PGM_P)flashStr);
-	// Print out a message for all events.
-	ESP_LOGI(DEVTAG, "handle event: %s", buffer);
-	ESP_LOGI(DEVTAG, "button state: %d", buttonState);
-
 	switch (eventType) {
+    case AceButton::kEventPressed:
+        xTaskNotify(gui_task, EVENT_SELECT, eSetBits);
+        break;
 	case AceButton::kEventLongPressed:
-		xTaskNotify(gui_task, EVENT_SELECT, eSetBits);
+		xTaskNotify(gui_task, EVENT_LONG_SELECT, eSetBits);
 		break;
 	case AceButton::kEventDoubleClicked:
 		xTaskNotify(gui_task, EVENT_BACK, eSetBits);

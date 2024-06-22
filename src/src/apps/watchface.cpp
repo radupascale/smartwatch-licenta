@@ -13,14 +13,19 @@ static char const *TAG = "WATCHFACE";
  */
 void WatchFace::setup_ui()
 {
+	if (setup) {
+		load_screen();
+		return;
+	}
+    setup = true;
 	/* Get the current time and date */
 	time_t now;
 	struct tm timeinfo;
 	time(&now);
 	localtime_r(&now, &timeinfo);
 
-    screen = lv_obj_create(NULL);
-    lv_scr_load(screen);
+	screen = lv_obj_create(NULL);
+	lv_scr_load(screen);
 	/* Set background image */
 	lv_obj_t *icon = lv_image_create(lv_screen_active());
 
@@ -92,7 +97,7 @@ void WatchFace::setup_ui()
 
 void WatchFace::load_screen()
 {
-    lv_scr_load(screen);
+	lv_scr_load(screen);
 }
 
 void WatchFace::update_ui()
@@ -123,4 +128,9 @@ void WatchFace::update_ui()
 void WatchFace::attach_pedometer(Pedometer *pedometer)
 {
 	this->pedometer = pedometer;
+}
+
+void WatchFace::handle_button_event(uint32_t event)
+{
+    return;
 }

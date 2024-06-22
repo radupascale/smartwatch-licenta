@@ -27,15 +27,16 @@ class WatchFace : public App
 
     lv_obj_t *screen;
 
+    void load_screen() override;
   public:
-	WatchFace(DeviceManager *deviceManager, String watch_face)
-		: App(deviceManager, watch_face)
+	WatchFace(DeviceManager *deviceManager, String appName)
+		: App(deviceManager, appName)
 	{
 		battery = deviceManager->get_battery();
 	}
-
 	void attach_pedometer(Pedometer *pedometer);
+
 	void setup_ui() override;
 	void update_ui() override;
-    void load_screen() override;
+    void handle_button_event(uint32_t event) override;
 };
