@@ -33,29 +33,6 @@ TaskHandle_t button_task;
 static SemaphoreHandle_t lvgl_mutex;
 static GUI *gui = nullptr;
 
-void wait_for_sntp()
-{
-	if (settings->get_sntp_status() != true) {
-		return;
-	}
-	/* Get the current time and date */
-	int retry = 0;
-	int compare_year = 2024 - 1900;
-	time_t now;
-	struct tm timeinfo;
-	time(&now);
-	localtime_r(&now, &timeinfo);
-
-	/* Hacky, but whatever*/
-	while (timeinfo.tm_year < compare_year && retry < MAX_TIME_RETRY) {
-		ESP_LOGI(MAIN_TAG, "Waiting for system time to be set...");
-		vTaskDelay(2000 / portTICK_PERIOD_MS);
-		time(&now);
-		localtime_r(&now, &timeinfo);
-		retry++;
-	}
-}
-
 void os_init()
 {
 	/* Initialize LVGL mutex */
@@ -73,7 +50,6 @@ void os_init()
 	deviceManager->init(settings);
 
 	/* Initialize applications */
-	// wait_for_sntp();
 	/* TODO: why do these also get settings as an argument?  */
 	pedometer = new Pedometer(deviceManager, "Pedometer");
 	watchFace = new WatchFace(deviceManager, "Watchface");
