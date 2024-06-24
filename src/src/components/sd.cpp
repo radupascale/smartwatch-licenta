@@ -19,7 +19,7 @@ esp_err_t SD::init()
 	pinMode(SS_SD, OUTPUT);
 #endif
 
-	SPI.begin(SCK, MISO, MOSI, SS_SD);
+	SPI.begin(BOARD_SCK, BOARD_MISO, BOARD_MOSI, SS_SD);
 	if (!sd.begin(SS_SD)) {
 		if (sd.card()->errorCode()) {
 			ESP_LOGE(TAG, "SD initialization failed.\n");

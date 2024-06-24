@@ -21,7 +21,7 @@
 #define USE_FLASH 0
 
 #define BUTTON_INTR_FLAG
-#define TIMER_EXPIRE_MS 5000
+#define TIMER_EXPIRE_MS 10000
 #define PAUSE_TASK (0x31)
 #define RESUME_TASK (0x30)
 using namespace ace_button;

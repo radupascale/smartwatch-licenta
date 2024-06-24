@@ -4,17 +4,16 @@
 #include "esp_attr.h"
 #include "esp_event.h"
 #include "esp_log.h"
-#include "esp_netif.h"
 #include "esp_sleep.h"
 #include "esp_sntp.h"
 #include "esp_system.h"
-#include "lwip/ip_addr.h"
 #include "nvs_flash.h"
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
 
 #include "esp_sntp.h"
+#include "esp_task_wdt.h"
 
 static const char *TAG = "SETTINGS";
 BoardSettings *BoardSettings::instance = nullptr;
@@ -22,23 +21,44 @@ RTC_DATA_ATTR static int boot_count = 0;
 
 void BoardSettings::init(void)
 {
-    esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
+	esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
 
-    init_nvs_flash();
+	/**
+	 * This is needed to avoid KERNEL PANIC
+	 * caused by the IDLE task failing to reset the WDT
+	 * Some tasks take longer the default value of FreeRTOS
+	 * expects.
+	 */
+	esp_task_wdt_init(TWDT_TIMEOUT_MS, true);
+
+	init_nvs_flash();
 	init_pedometer_nvs_flash();
-    /** 
-     * Configure wifi and SNTP only after a hard reboot
-     */
-    if (!(wakeup_cause == ESP_SLEEP_WAKEUP_EXT0))
-    {
-        wifi_init();
-        clock_init();
-    }
-    else
-    {
-        boot_count++;
-        set_timezone();
-    }
+    set_cpu_frequency(DEFAULT_CPU_FREQ_MHZ);
+	set_timezone();
+
+	if (wakeup_cause == ESP_SLEEP_WAKEUP_EXT0) {
+		boot_count++;
+	} 
+}
+
+void BoardSettings::set_wifi_in_use(bool value)
+{
+	wifiInUse = value;
+
+	if (wifiInUse && getCpuFrequencyMhz() < ANTENNA_CPU_FREQ_MHZ) {
+        set_cpu_frequency(ANTENNA_CPU_FREQ_MHZ);
+	}
+}
+
+void BoardSettings::set_cpu_frequency(uint8_t MHz)
+{
+	if (MHz < ANTENNA_CPU_FREQ_MHZ && wifiInUse) {
+		ESP_LOGI(TAG, "A frequency lower than 80MHz would disable WiFi");
+		return;
+	}
+    setCpuFrequencyMhz(MHz);
+
+    ESP_LOGI(TAG, "CPU: %u", getCpuFrequencyMhz());
 }
 
 void BoardSettings::init_nvs_flash(void)
@@ -56,124 +76,147 @@ void BoardSettings::init_nvs_flash(void)
 
 bool BoardSettings::get_sntp_status(void)
 {
-    return sntp_enabled();
+	return sntp_enabled();
 }
 
 int BoardSettings::get_boot_count(void)
 {
-    return boot_count;
+	return boot_count;
 }
 
 BoardSettings::BoardSettings()
 {
-    if (this->instance != nullptr)
-    {
-        return;
-    }
-    this->instance = this; 
+	if (this->instance != nullptr) {
+		return;
+	}
+	this->instance = this;
 }
 
-void BoardSettings::event_handler(void *arg, esp_event_base_t event_base,
-								  int32_t event_id, void *event_data)
+void BoardSettings::wifi_init_config_server()
 {
-	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
-		esp_wifi_connect();
-	} else if (event_base == WIFI_EVENT &&
-			   event_id == WIFI_EVENT_STA_DISCONNECTED) {
-		if (s_retry_num < MAXIMUM_RETRY) {
-			esp_wifi_connect();
-			s_retry_num++;
-			ESP_LOGI(TAG, "retry to connect to the AP");
-		} else {
-			xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+	WiFiServer configWebServer(HTTP_PORT);
+	configWebServer.begin();
+
+	while (true) {
+		WiFiClient client = configWebServer.available();
+		if (client) {
+			char line[64];
+			int l = client.readBytesUntil('\n', line, sizeof(line));
+			line[l] = 0;
+			client.find((char *)"\r\n\r\n");
+			if (strncmp_P(line, PSTR("POST"), strlen("POST")) == 0) {
+				l = client.readBytes(line, sizeof(line));
+				line[l] = 0;
+
+				/* Replace + with spaces */
+				for (int i = 0; line[i]; i++) {
+					if (line[i] == '+')
+						line[i] = ' ';
+				}
+
+				const char *delims = "=&";
+				strtok(line, delims);
+				const char *ssid = strtok(NULL, delims);
+				strtok(NULL, delims);
+				const char *pass = strtok(NULL, delims);
+
+				// send a response before attemting to connect to the WiFi
+				// network because it will reset the SoftAP and disconnect the
+				// client station
+				client.println(F("HTTP/1.1 200 OK"));
+				client.println(F("Connection: close"));
+				client.println(
+					F("Refresh: 10")); // send a request after 10 seconds
+				client.println();
+				client.println(F("<html><body><h3>Configuration "
+								 "AP</h3><br>connecting...</body></html>"));
+				client.stop();
+
+				ESP_LOGI(TAG, "SSID: %s", ssid);
+				WiFi.persistent(true);
+				WiFi.setAutoReconnect(true);
+				WiFi.begin(ssid, pass);
+				WiFi.waitForConnectResult();
+			} else {
+
+				client.println(F("HTTP/1.1 200 OK"));
+				client.println(F("Connection: close"));
+				client.println();
+				client.println(F("<html><body><h3>Configuration AP</h3><br>"));
+
+				int status = WiFi.status();
+				if (status == WL_CONNECTED) {
+					client.println(F("Connection successful. Ending AP."));
+				} else {
+					client.println(
+						F("<form action='/' method='POST'>WiFi connection "
+						  "failed. Enter valid parameters, please.<br><br>"));
+					client.println(
+						F("SSID:<br><input type='text' name='i'><br>"));
+					client.println(F("Password:<br><input type='password' "
+									 "name='p'><br><br>"));
+					client.println(
+						F("<input type='submit' value='Submit'></form>"));
+				}
+				client.println(F("</body></html>"));
+				client.stop();
+
+				if (status == WL_CONNECTED) {
+					vTaskDelay(pdMS_TO_TICKS(
+						1000)); // to let the SDK finish the communication
+					configWebServer.stop();
+					WiFi.mode(WIFI_STA);
+					return;
+				}
+			}
 		}
-		ESP_LOGI(TAG, "connect to the AP fail");
-	} else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-		ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-		ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-		s_retry_num = 0;
-		xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
 	}
 }
 
-void BoardSettings::wifi_init(void)
+String BoardSettings::wifi_config_softap(void)
 {
+	IPAddress ip;
+	bool status;
 
-	ESP_LOGI(TAG, "Initializing wifi.");
+	status = WiFi.mode(WIFI_AP_STA);
+	if (!status)
+		ESP_LOGE(TAG, "Failed to configure SOFTAP");
+	else
+		ip = WiFi.softAPIP();
 
-	s_wifi_event_group = xEventGroupCreate();
-
-	ESP_ERROR_CHECK(esp_netif_init());
-
-	ESP_ERROR_CHECK(esp_event_loop_create_default());
-	esp_netif_create_default_wifi_sta();
-
-	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-	esp_event_handler_instance_t instance_any_id;
-	esp_event_handler_instance_t instance_got_ip;
-	ESP_ERROR_CHECK(esp_event_handler_instance_register(
-		WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler_static, NULL,
-		&instance_any_id));
-	ESP_ERROR_CHECK(esp_event_handler_instance_register(
-		IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler_static, NULL,
-		&instance_got_ip));
-
-	wifi_config_t wifi_config;
-	memset(&wifi_config, 0, sizeof(wifi_config));
-	strncpy((char *)wifi_config.sta.ssid, MY_SSID,
-			sizeof(wifi_config.sta.ssid));
-	strncpy((char *)wifi_config.sta.password, MY_PASS,
-			sizeof(wifi_config.sta.password));
-
-	wifi_config.sta.channel = 0;
-	wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
-
-	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
-	ESP_ERROR_CHECK(esp_wifi_start());
-
-	ESP_LOGI(TAG, "wifi_init_sta finished.");
-
-	/* Waiting until either the connection is established (WIFI_CONNECTED_BIT)
-	 * or connection failed for the maximum number of re-tries (WIFI_FAIL_BIT).
-	 * The bits are set by event_handler() (see above) */
-	EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-										   WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-										   pdFALSE, pdFALSE, portMAX_DELAY);
-
-	/* xEventGroupWaitBits() returns the bits before the call returned, hence we
-	 * can test which event actually happened. */
-	if (bits & WIFI_CONNECTED_BIT) {
-		ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", MY_SSID,
-				 MY_PASS);
-	} else if (bits & WIFI_FAIL_BIT) {
-		ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
-				 wifi_config.sta.ssid, wifi_config.sta.password);
-	} else {
-		ESP_LOGE(TAG, "UNEXPECTED EVENT");
-	}
+	return ip.toString();
 }
 
 void BoardSettings::wifi_stop(void)
 {
-	esp_wifi_stop();
+	WiFi.mode(WIFI_OFF);
 }
 
-void BoardSettings::wifi_start(void)
+wl_status_t BoardSettings::get_wifi_status(void)
 {
-	esp_wifi_start();
+	return WiFi.status();
+}
+
+wl_status_t BoardSettings::wifi_start(void)
+{
+	wl_status_t status;
+
+	WiFi.begin();
+	/* NOTE: this blocks the current task for the duration of the function */
+	WiFi.waitForConnectResult(5000);
+	status = WiFi.status();
+
+	return status;
 }
 
 void BoardSettings::configure_deep_sleep_wakeup_source(void)
 {
-    ESP_ERROR_CHECK(esp_sleep_enable_ext0_wakeup(RTC_GPIO0, 0));
+	ESP_ERROR_CHECK(esp_sleep_enable_ext0_wakeup(RTC_GPIO0, 0));
 }
 
 void BoardSettings::deep_sleep(void)
 {
-    configure_deep_sleep_wakeup_source();
+	configure_deep_sleep_wakeup_source();
 	wifi_stop();
 	ESP_LOGI(TAG, "Entering deep sleep");
 	esp_deep_sleep_start();
@@ -188,7 +231,7 @@ void BoardSettings::clock_init(void)
 	sntp_init();
 	sntp_sync_time(&tv);
 
-    set_timezone();
+	set_timezone();
 }
 
 void BoardSettings::set_timezone(void)
@@ -225,29 +268,26 @@ esp_err_t BoardSettings::write_to_nvs(const char *key, void *value,
 	err = nvs_open_from_partition(partition, DEFAULT_NAMESPACE, NVS_READWRITE,
 								  &handler);
 	if (err != ESP_OK) {
-		ESP_LOGE(TAG, "Error (%s) opening NVS handle",
-				 esp_err_to_name(err));
+		ESP_LOGE(TAG, "Error (%s) opening NVS handle", esp_err_to_name(err));
 		return err;
 	}
 
 	/* This will overwrite the value at the nvs location if it exists */
 	err = nvs_set_blob(handler, key, value, size);
 	if (err != ESP_OK) {
-		ESP_LOGE(TAG, "Error (%s) writing to NVS",
-				 esp_err_to_name(err));
+		ESP_LOGE(TAG, "Error (%s) writing to NVS", esp_err_to_name(err));
 		goto exit;
 	}
 
 	err = nvs_commit(handler);
 	if (err != ESP_OK) {
-		ESP_LOGE(TAG, "Error (%s) flashing to NVS",
-				 esp_err_to_name(err));
+		ESP_LOGE(TAG, "Error (%s) flashing to NVS", esp_err_to_name(err));
 	}
 
 exit:
 	nvs_close(handler);
 
-    ESP_LOGI(TAG, "Finish writing to NVS");
+	ESP_LOGI(TAG, "Finish writing to NVS");
 	return err;
 }
 
@@ -262,8 +302,7 @@ void *BoardSettings::read_from_nvs(const char *key, uint32_t size,
 	err = nvs_open_from_partition(partition, DEFAULT_NAMESPACE, NVS_READWRITE,
 								  &handler);
 	if (err != ESP_OK) {
-		ESP_LOGE(TAG, "Error (%s) opening NVS handle",
-				 esp_err_to_name(err));
+		ESP_LOGE(TAG, "Error (%s) opening NVS handle", esp_err_to_name(err));
 	}
 
 	err = nvs_get_blob(handler, key, NULL, &len);
@@ -274,8 +313,8 @@ void *BoardSettings::read_from_nvs(const char *key, uint32_t size,
 	}
 
 	if (len == 0) {
-		ESP_LOGI(TAG, "No value set at key %s in NVS partition %s",
-				 key, partition);
+		ESP_LOGI(TAG, "No value set at key %s in NVS partition %s", key,
+				 partition);
 	} else {
 		value = malloc(len);
 		err = nvs_get_blob(handler, key, value, &len);
@@ -288,6 +327,6 @@ void *BoardSettings::read_from_nvs(const char *key, uint32_t size,
 
 exit:
 	nvs_close(handler);
-    ESP_LOGI(TAG, "Finish reading from NVS");
+	ESP_LOGI(TAG, "Finish reading from NVS");
 	return value;
 }

@@ -9,9 +9,9 @@
 #define BUTTON_DOWN GPIO_NUM_26
 #define RTC_GPIO0 BUTTON_UP
 
-#define MISO 37
-#define SCK 36
-#define MOSI 35
+#define BOARD_MISO 37
+#define BOARD_SCK 36
+#define BOARD_MOSI 35
 #define SS_SD 3
 #define SS_TFT 17
 #define SS_FLASH GPIO_NUM_14
@@ -23,7 +23,7 @@
 #define DEFAULT_NAMESPACE "default"
 
 #define TWDT_TIMEOUT_MS 3000
-#define DEFAULT_CPU_FREQ_MHZ 80
+#define DEFAULT_CPU_FREQ_MHZ 40
 #define ANTENNA_CPU_FREQ_MHZ 80 // wifi and bluetooth only works at this freq
 #define INACTIVE_CPU_FREQ_MHZ 20
 

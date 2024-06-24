@@ -18,6 +18,7 @@ void GUI::handle_event(uint32_t event)
 {
     uint32_t eventFlag = event & ULONG_MAX;
 
+    ESP_LOGI(TAG, "Event: %d", eventFlag);
 	switch (eventFlag) {
     case EVENT_SELECT: case EVENT_UP: case EVENT_DOWN:
         current_app->handle_button_event(eventFlag);
@@ -26,11 +27,6 @@ void GUI::handle_event(uint32_t event)
 		current_app_index = (current_app_index + 1) % app_list.size();
 		change_app(current_app_index);
 		break;
-	case EVENT_BACK:
-		current_app_index =
-			current_app_index > 0 ? current_app_index - 1 : app_list.size() - 1;
-        change_app(current_app_index);
-        break;
 	default:
 		break;
 	}

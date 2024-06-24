@@ -16,42 +16,40 @@ DeviceManager::DeviceManager()
 
 void DeviceManager::inactivity_timer_expired(TimerHandle_t xTimer)
 {
-    // instance->pause_tasks();
-    // setCpuFrequencyMhz(20);
-    // ESP_LOGI(DEVTAG, "CPU Frequency: %d MHz", getCpuFrequencyMhz());
+	// instance->pause_tasks();
+	// setCpuFrequencyMhz(20);
+	// ESP_LOGI(DEVTAG, "CPU Frequency: %d MHz", getCpuFrequencyMhz());
 
-    /* Signal the resumer to pause */
+	/* Signal the resumer to pause */
 	gpio_set_intr_type(BUTTON_SELECT, GPIO_INTR_LOW_LEVEL);
-    xTaskNotifyGive(resumer_task);
+	xTaskNotifyGive(resumer_task);
 }
 
 void DeviceManager::add_pausable_task(TaskHandle_t task)
 {
-    pausable_tasks.add(task);
+	pausable_tasks.add(task);
 }
 
 void DeviceManager::pause_tasks(void)
 {
-    int i;
+	int i;
 
-    /**
-     * Use notifications because some tasks (like the render task)
-     * could have actions to do before sleeping (disable the backlight)
-     */
-    for (i = 0; i < pausable_tasks.size(); i++)
-    {
-        xTaskNotify(pausable_tasks.get(i), PAUSE_TASK, eSetBits);
-    }
+	/**
+	 * Use notifications because some tasks (like the render task)
+	 * could have actions to do before sleeping (disable the backlight)
+	 */
+	for (i = 0; i < pausable_tasks.size(); i++) {
+		xTaskNotify(pausable_tasks.get(i), PAUSE_TASK, eSetBits);
+	}
 }
 
 void DeviceManager::resume_inactive_tasks(void)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < pausable_tasks.size(); i++)
-    {
-        xTaskNotify(pausable_tasks.get(i), RESUME_TASK, eSetBits);
-    }
+	for (i = 0; i < pausable_tasks.size(); i++) {
+		xTaskNotify(pausable_tasks.get(i), RESUME_TASK, eSetBits);
+	}
 }
 
 void DeviceManager::create_inactivity_timer(void)
@@ -91,13 +89,13 @@ void DeviceManager::reset_inactivity_timer()
 static void IRAM_ATTR inactivity_isr(void *arg)
 {
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    
-    /* Disable interrupts for this button */
+
+	/* Disable interrupts for this button */
 	gpio_set_intr_type(BUTTON_SELECT, GPIO_INTR_DISABLE);
 
 	vTaskNotifyGiveFromISR(resumer_task, &xHigherPriorityTaskWoken);
 
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void DeviceManager::init(BoardSettings *settings)
@@ -111,7 +109,6 @@ void DeviceManager::init(BoardSettings *settings)
 	select_config = new ButtonConfig();
 	select_config->setEventHandler(handle_button_event_select_static);
 	select_config->setFeature(ButtonConfig::kFeatureClick);
-	select_config->setFeature(ButtonConfig::kFeatureDoubleClick);
 	select_config->setFeature(ButtonConfig::kFeatureLongPress);
 	button_select =
 		new ace_button::AceButton(select_config, (uint8_t)BUTTON_SELECT);
@@ -129,7 +126,7 @@ void DeviceManager::init(BoardSettings *settings)
 	gpio_set_intr_type(BUTTON_SELECT, GPIO_INTR_DISABLE);
 	gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
 	gpio_isr_handler_add(BUTTON_SELECT, inactivity_isr, NULL);
-    pausable_tasks = LinkedList<TaskHandle_t>();
+	pausable_tasks = LinkedList<TaskHandle_t>();
 
 	/* TODO: Initialize every component */
 #if USE_DISPLAY
@@ -231,7 +228,7 @@ void DeviceManager::handle_button_event_up_static(AceButton *,
 void DeviceManager::handle_button_event_up(AceButton *, uint8_t eventType,
 										   uint8_t buttonState)
 {
-    reset_inactivity_timer();
+	reset_inactivity_timer();
 	switch (eventType) {
 	case AceButton::kEventPressed:
 		xTaskNotify(gui_task, EVENT_UP, eSetBits);
@@ -251,7 +248,7 @@ void DeviceManager::handle_button_event_down_static(AceButton *,
 void DeviceManager::handle_button_event_down(AceButton *, uint8_t eventType,
 											 uint8_t buttonState)
 {
-    reset_inactivity_timer();
+	reset_inactivity_timer();
 	switch (eventType) {
 	case AceButton::kEventPressed:
 		xTaskNotify(gui_task, EVENT_DOWN, eSetBits);
@@ -271,16 +268,13 @@ void DeviceManager::handle_button_event_select_static(AceButton *,
 void DeviceManager::handle_button_event_select(AceButton *, uint8_t eventType,
 											   uint8_t buttonState)
 {
-    reset_inactivity_timer();
+	reset_inactivity_timer();
 	switch (eventType) {
-    case AceButton::kEventPressed:
+    case AceButton::kEventClicked:
         xTaskNotify(gui_task, EVENT_SELECT, eSetBits);
         break;
 	case AceButton::kEventLongPressed:
 		xTaskNotify(gui_task, EVENT_LONG_SELECT, eSetBits);
-		break;
-	case AceButton::kEventDoubleClicked:
-		xTaskNotify(gui_task, EVENT_BACK, eSetBits);
 		break;
 	default:
 		break;

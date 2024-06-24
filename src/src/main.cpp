@@ -1,7 +1,7 @@
 #include "apps/gui.h"
 #include "apps/pedometer.h"
-#include "apps/watchface.h"
 #include "apps/settings_app.h"
+#include "apps/watchface.h"
 #include "components/boardsettings.h"
 
 #include "configs/core.h"
@@ -12,7 +12,6 @@
 #include "esp_system.h"
 
 #include "esp32/clk.h"
-#include "esp_task_wdt.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
@@ -59,8 +58,6 @@ void wait_for_sntp()
 
 void os_init()
 {
-    setCpuFrequencyMhz(DEFAULT_CPU_FREQ_MHZ);
-
 	/* Initialize LVGL mutex */
 	lvgl_mutex = xSemaphoreCreateBinary();
 	if (lvgl_mutex != NULL) {
@@ -76,12 +73,12 @@ void os_init()
 	deviceManager->init(settings);
 
 	/* Initialize applications */
-	wait_for_sntp();
+	// wait_for_sntp();
 	/* TODO: why do these also get settings as an argument?  */
 	pedometer = new Pedometer(deviceManager, "Pedometer");
 	watchFace = new WatchFace(deviceManager, "Watchface");
 	watchFace->attach_pedometer(pedometer);
-    settingsApp = new Settings(deviceManager, "Settings");
+	settingsApp = new Settings(deviceManager, "Settings");
 
 	/* TODO: init gui */
 	gui = new GUI();
@@ -99,18 +96,18 @@ void os_update_display(void *pvParameter)
 	uint32_t ulNotifiedValue = 0x00;
 
 	while (1) {
-        xTaskNotifyWait(0, 0, &ulNotifiedValue, pdMS_TO_TICKS(200));
+		xTaskNotifyWait(0, 0, &ulNotifiedValue, pdMS_TO_TICKS(200));
 
-        if (ulNotifiedValue & PAUSE_TASK)
-        {
-            ESP_LOGI(MAIN_TAG, "Pause Update display");
-            display->disable();
-            
-            /* Note: the event it is waiting for is RESUME_TASK */
-            xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
-            display->enable();
-            ESP_LOGI(MAIN_TAG, "Resume update display");
-        }
+		if (ulNotifiedValue & PAUSE_TASK) {
+			ESP_LOGI(MAIN_TAG, "Pause Update display");
+			display->disable();
+
+			/* Note: the event it is waiting for is RESUME_TASK */
+			xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue,
+							portMAX_DELAY);
+			display->enable();
+			ESP_LOGI(MAIN_TAG, "Resume update display");
+		}
 		/**
 		 * LVGL is not thread safe, use this to guard display update
 		 * operations, see this: https://docs.lvgl.io/8.3/porting/os.html
@@ -125,11 +122,6 @@ void os_update_display(void *pvParameter)
 void os_gui(void *pvParameter)
 {
 	uint32_t ulNotifiedValue = 0x00;
-	/**
-	 * This is needed to avoid KERNEL PANIC
-	 * caused by the IDLE task failing to reset the WDT
-	 */
-	esp_task_wdt_init(TWDT_TIMEOUT_MS, true);
 
 	while (1) {
 		xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
@@ -169,18 +161,20 @@ void os_pedometer(void *pvParameter)
  */
 void os_check_buttons(void *pvParameter)
 {
-    uint32_t ulNotifiedValue;
-        
-	while (1) {
-        xTaskNotifyWait(0, 0, &ulNotifiedValue, pdMS_TO_TICKS(5));
+	uint32_t ulNotifiedValue;
 
-        if (ulNotifiedValue & PAUSE_TASK)
-        {
-            ESP_LOGI(MAIN_TAG, "Pausing button task");
-            /* Note: the event it is waiting for is RESUME_TASK */
-            xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
-            ESP_LOGI(MAIN_TAG, "Resuming button task");
-        }
+	while (1) {
+		xTaskNotifyWait(0, 0, &ulNotifiedValue, pdMS_TO_TICKS(5));
+
+		if (ulNotifiedValue & PAUSE_TASK) {
+			ESP_LOGI(MAIN_TAG, "Pausing button task");
+			/* Note: the event it is waiting for is RESUME_TASK */
+			xTaskNotifyWait(ULONG_MAX, ULONG_MAX, &ulNotifiedValue,
+							portMAX_DELAY);
+			ESP_LOGI(MAIN_TAG, "Resuming button task");
+			/* Prevent reading of button press after waking up */
+			vTaskDelay(pdMS_TO_TICKS(200));
+		}
 		deviceManager->check_buttons();
 	}
 }
@@ -189,36 +183,32 @@ void os_check_buttons(void *pvParameter)
  * @brief Task who's sole purpose is to PAUSE / RESUME
  * tasks which get suspended when the inactivity timer
  * expires
- * 
- * @param pvParameter 
+ *
+ * @param pvParameter
  */
 void os_resumer(void *pvParameter)
 {
-    deviceManager->add_pausable_task(display_task);
-    deviceManager->add_pausable_task(button_task);
-    deviceManager->start_inactivity_timer();
-    
-    int pause = 1;
-    while (1)
-    {
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        if (pause)
-        {
-            ESP_LOGI(MAIN_TAG, "Pausing tasks");
-            deviceManager->pause_tasks();
-            setCpuFrequencyMhz(INACTIVE_CPU_FREQ_MHZ);
-            pause = 0;
-        }
-        else
-        {
-            setCpuFrequencyMhz(DEFAULT_CPU_FREQ_MHZ);
-            deviceManager->resume_inactive_tasks();
-            ESP_LOGI(MAIN_TAG, "Resuming tasks");
-            deviceManager->reset_inactivity_timer();
-            pause = 1;
-        }
-    }
-    
+	deviceManager->add_pausable_task(display_task);
+	deviceManager->add_pausable_task(button_task);
+	deviceManager->start_inactivity_timer();
+
+	/* TODO: Change frequency based on wifi status */
+	int pause = 1;
+	while (1) {
+		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+		if (pause) {
+			ESP_LOGI(MAIN_TAG, "Pausing tasks");
+			deviceManager->pause_tasks();
+            settings->set_cpu_frequency(INACTIVE_CPU_FREQ_MHZ);
+			pause = 0;
+		} else {
+            settings->set_cpu_frequency(DEFAULT_CPU_FREQ_MHZ);
+			deviceManager->resume_inactive_tasks();
+			ESP_LOGI(MAIN_TAG, "Resuming tasks");
+			deviceManager->reset_inactivity_timer();
+			pause = 1;
+		}
+	}
 }
 
 #ifndef UNIT_TEST
@@ -235,11 +225,10 @@ void app_main()
 
 	xTaskCreatePinnedToCore(&os_check_buttons, "os_check_buttons", 8096, NULL,
 							5, &button_task, APP_CPU_NUM);
-	xTaskCreatePinnedToCore(&os_pedometer, "os_pedometer", 8096, NULL, 5,
-	NULL, 						APP_CPU_NUM);
-    xTaskCreatePinnedToCore(&os_resumer, "os_resumer", 8096, NULL, 7, &resumer_task,
-                            APP_CPU_NUM);
-
+	xTaskCreatePinnedToCore(&os_pedometer, "os_pedometer", 8096, NULL, 5, NULL,
+							APP_CPU_NUM);
+	xTaskCreatePinnedToCore(&os_resumer, "os_resumer", 8096, NULL, 7,
+							&resumer_task, APP_CPU_NUM);
 }
 };
 #endif

@@ -3,8 +3,8 @@
 /**
  * Configure wifi connection before building
  */
-#define MY_SSID ""
-#define MY_PASS ""
+#define MY_SSID "Pretty fly for a WiFi"
+#define MY_PASS "Pulapulapizdapizda1"
 
 /**
  * @brief Maximum tries to wait for sntp

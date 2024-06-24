@@ -1,4 +1,5 @@
 #include "apps/watchface.h"
+#include "WiFi.h"
 #include "resources/fonts/symbols.h"
 
 LV_FONT_DECLARE(digital_7_72px);
@@ -17,7 +18,7 @@ void WatchFace::setup_ui()
 		load_screen();
 		return;
 	}
-    setup = true;
+	setup = true;
 	/* Get the current time and date */
 	time_t now;
 	struct tm timeinfo;
@@ -86,13 +87,19 @@ void WatchFace::setup_ui()
 	lv_obj_align_to(weather_symbol_label, weather_label, LV_ALIGN_OUT_LEFT_MID,
 					0, 0);
 
+
 	lv_style_init(&battery_style);
 	lv_style_set_text_font(&battery_style, &lv_font_montserrat_20);
 	lv_style_set_text_color(&battery_style, lv_color_make(0xFF, 0xFF, 0xFF));
 	battery_label = lv_label_create(lv_scr_act());
-	lv_label_set_text(battery_label, "%0 4000mV");
+	lv_label_set_text(battery_label, "%0");
 	lv_obj_add_style(battery_label, &battery_style, 0);
-	lv_obj_align(battery_label, LV_ALIGN_TOP_MID, 0, 30);
+	lv_obj_align(battery_label, LV_ALIGN_TOP_MID, 20, 30);
+
+    wifi_label = lv_label_create(lv_scr_act());
+    lv_obj_add_style(wifi_label, &symbol_style, 0);
+	lv_label_set_text(weather_symbol_label, RAINY_SYMBOL);
+    lv_obj_align_to(wifi_label, battery_label, LV_ALIGN_LEFT_MID, -30, 0);
 }
 
 void WatchFace::load_screen()
@@ -119,10 +126,16 @@ void WatchFace::update_ui()
 	}
 
 	if (battery != NULL) {
-		lv_label_set_text_fmt(battery_label, "%hhu%%%umV",
-							  battery->get_battery_level(),
-							  battery->read_adc());
+		lv_label_set_text_fmt(battery_label, "%hhu%%",
+							  battery->get_battery_level());
 	}
+
+	if (WiFi.status() == WL_CONNECTED) {
+        lv_label_set_text_fmt(wifi_label, WIFI_SYMBOL);
+	}
+    else {
+        lv_label_set_text_fmt(wifi_label, RAINY_SYMBOL);
+    }
 }
 
 void WatchFace::attach_pedometer(Pedometer *pedometer)
@@ -132,5 +145,5 @@ void WatchFace::attach_pedometer(Pedometer *pedometer)
 
 void WatchFace::handle_button_event(uint32_t event)
 {
-    return;
+	return;
 }

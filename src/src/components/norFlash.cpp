@@ -21,7 +21,7 @@ esp_err_t NORFlash::init(void)
 		ESP_LOGI(TAG, "Failed to configure SS pin");
 		return ret;
 	}
-	SPI.begin(SCK, MISO, MOSI, SS_FLASH);
+	SPI.begin(BOARD_SCK, BOARD_MISO, BOARD_MOSI, SS_FLASH);
 	busSettings = new SPISettings(SPI_SPEED, SPI_BYTE_ORDER_MSB, SPI_MODE0);
 
 	return ret;
